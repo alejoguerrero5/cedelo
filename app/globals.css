@@ -32,6 +32,7 @@
    BASE VARIABLES (THEME)
 ========================= */
 :root {
+  /* CEDELO Brand Colors */
   --background: 210 33% 98%;
   --foreground: 220 30% 15%;
 
@@ -43,7 +44,6 @@
 
   --primary: 214 100% 40%;
   --primary-foreground: 0 0% 100%;
-
   --primary-light: 214 80% 55%;
   --primary-dark: 214 100% 30%;
 
@@ -80,25 +80,36 @@
     hsl(214, 100%, 40%) 100%
   );
 
-  --shadow-lg: 0 10px 15px -3px hsla(220, 30%, 15%, 0.08);
-  --shadow-xl: 0 20px 25px -5px hsla(220, 30%, 15%, 0.1);
-  --shadow-navbar: 0 1px 3px 0 hsla(220, 30%, 15%, 0.1);
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 hsla(220, 30%, 15%, 0.05);
+  --shadow-md:
+    0 4px 6px -1px hsla(220, 30%, 15%, 0.08),
+    0 2px 4px -2px hsla(220, 30%, 15%, 0.06);
+  --shadow-lg:
+    0 10px 15px -3px hsla(220, 30%, 15%, 0.08),
+    0 4px 6px -4px hsla(220, 30%, 15%, 0.05);
+  --shadow-xl:
+    0 20px 25px -5px hsla(220, 30%, 15%, 0.1),
+    0 8px 10px -6px hsla(220, 30%, 15%, 0.05);
   --shadow-blue: 0 10px 40px -10px hsla(214, 100%, 40%, 0.35);
+  --shadow-navbar: 0 1px 3px 0 hsla(220, 30%, 15%, 0.1);
 }
 
 /* DARK MODE */
 .dark {
   --background: 220 25% 10%;
   --foreground: 210 40% 98%;
+
   --card: 220 25% 12%;
   --card-foreground: 210 40% 98%;
+
   --primary: 214 85% 55%;
-  --border: 220 25% 20%;
+  --primary-foreground: 220 25% 10%;
+  --primary-light: 214 80% 65%;
+  --primary-dark: 214 100% 45%;
 }
 
-/* =========================
-   BASE STYLES (SIN @apply)
-========================= */
+/* 3. Base styles */
 * {
   border-color: hsl(var(--border));
 }
@@ -112,113 +123,100 @@ body {
   color: hsl(var(--foreground));
   font-family: "Inter", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* =========================
    COMPONENTES CUSTOM
 ========================= */
-.container-section {
-  width: 100%;
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
-
-.section-padding {
-  padding: 4rem 0;
-}
-
-.gradient-hero {
-  background: var(--gradient-hero);
-}
-
-.gradient-cta {
-  background: var(--gradient-cta);
-}
-
-.shadow-card {
-  box-shadow: var(--shadow-lg);
-}
-
-.shadow-card-hover {
-  box-shadow: var(--shadow-xl);
-}
-
-.shadow-navbar {
-  box-shadow: var(--shadow-navbar);
-}
-
-.shadow-blue {
-  box-shadow: var(--shadow-blue);
-}
-
-.text-gradient {
-  background: linear-gradient(
-    to right,
-    hsl(var(--primary)),
-    hsl(var(--primary-light))
-  );
-  -webkit-background-clip: text;
-  color: transparent;
-}
-
-/* =========================
-   ANIMACIONES
-========================= */
-.animate-fade-in {
-  animation: fadeIn 0.6s ease-out forwards;
-}
-
-.animate-slide-up {
-  animation: slideUp 0.6s ease-out forwards;
-}
-
-.animate-slide-in-left {
-  animation: slideInLeft 0.6s ease-out forwards;
-}
-
-.animate-slide-in-right {
-  animation: slideInRight 0.6s ease-out forwards;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
+@layer components {
+  .container-section {
+    @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
-  to {
-    opacity: 1;
+
+  .section-padding {
+    @apply py-16 md:py-24;
+  }
+
+  .gradient-hero {
+    background: var(--gradient-hero);
+  }
+
+  .gradient-cta {
+    background: var(--gradient-cta);
+  }
+
+  .shadow-card {
+    box-shadow: var(--shadow-lg);
+  }
+  .shadow-card-hover {
+    box-shadow: var(--shadow-xl);
+  }
+  .shadow-navbar {
+    box-shadow: var(--shadow-navbar);
+  }
+  .shadow-blue {
+    box-shadow: var(--shadow-blue);
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent;
   }
 }
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
+/* 5. Utilities */
+@layer utilities {
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  .animate-fade-in {
+    animation: fade-in 0.6s ease-out forwards;
   }
-}
 
-@keyframes slideInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-30px);
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
-  to {
-    opacity: 1;
-    transform: translateX(0);
+  .animate-slide-up {
+    animation: slide-up 0.6s ease-out forwards;
   }
-}
 
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(30px);
+  @keyframes slide-in-left {
+    from {
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
   }
-  to {
-    opacity: 1;
-    transform: translateX(0);
+  .animate-slide-in-left {
+    animation: slide-in-left 0.6s ease-out forwards;
+  }
+
+  @keyframes slide-in-right {
+    from {
+      opacity: 0;
+      transform: translateX(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  .animate-slide-in-right {
+    animation: slide-in-right 0.6s ease-out forwards;
   }
 }
