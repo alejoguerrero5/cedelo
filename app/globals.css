@@ -1,26 +1,228 @@
 @import "tailwindcss";
 
+@theme {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-primary-light: hsl(var(--primary-light));
+  --color-primary-dark: hsl(var(--primary-dark));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-success: hsl(var(--success));
+  --color-success-foreground: hsl(var(--success-foreground));
+
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+}
+/* =========================
+   BASE VARIABLES (THEME)
+========================= */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* CEDELO Brand Colors */
+  --background: 210 33% 98%;
+  --foreground: 220 30% 15%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 220 30% 15%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 220 30% 15%;
+
+  --primary: 214 100% 40%;
+  --primary-foreground: 0 0% 100%;
+  --primary-light: 214 80% 55%;
+  --primary-dark: 214 100% 30%;
+
+  --secondary: 210 33% 96%;
+  --secondary-foreground: 214 100% 40%;
+
+  --muted: 210 25% 94%;
+  --muted-foreground: 220 15% 45%;
+
+  --accent: 214 85% 50%;
+  --accent-foreground: 0 0% 100%;
+
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 145 65% 42%;
+  --success-foreground: 0 0% 100%;
+
+  --border: 210 25% 88%;
+  --input: 210 25% 88%;
+  --ring: 214 100% 40%;
+
+  --radius: 0.75rem;
+  --star: 43 96% 56%;
+
+  --gradient-hero: linear-gradient(
+    135deg,
+    hsl(214, 100%, 40%) 0%,
+    hsl(214, 80%, 55%) 100%
+  );
+  --gradient-cta: linear-gradient(
+    135deg,
+    hsl(214, 85%, 50%) 0%,
+    hsl(214, 100%, 40%) 100%
+  );
+
+  --gradient-icon: linear-gradient(
+    135deg,
+    hsl(134, 85%, 50%) 0%,
+    hsl(134, 100%, 40%) 100%
+  );
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 hsla(220, 30%, 15%, 0.05);
+  --shadow-md:
+    0 4px 6px -1px hsla(220, 30%, 15%, 0.08),
+    0 2px 4px -2px hsla(220, 30%, 15%, 0.06);
+  --shadow-lg:
+    0 10px 15px -3px hsla(220, 30%, 15%, 0.08),
+    0 4px 6px -4px hsla(220, 30%, 15%, 0.05);
+  --shadow-xl:
+    0 20px 25px -5px hsla(220, 30%, 15%, 0.1),
+    0 8px 10px -6px hsla(220, 30%, 15%, 0.05);
+  --shadow-blue: 0 10px 40px -10px hsla(214, 100%, 40%, 0.35);
+  --shadow-navbar: 0 1px 3px 0 hsla(220, 30%, 15%, 0.1);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* DARK MODE */
+.dark {
+  --background: 220 25% 10%;
+  --foreground: 210 40% 98%;
+
+  --card: 220 25% 12%;
+  --card-foreground: 210 40% 98%;
+
+  --primary: 214 85% 55%;
+  --primary-foreground: 220 25% 10%;
+  --primary-light: 214 80% 65%;
+  --primary-dark: 214 100% 45%;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* 3. Base styles */
+* {
+  border-color: hsl(var(--border));
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: "Inter", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* =========================
+   COMPONENTES CUSTOM
+========================= */
+@layer components {
+  .container-section {
+    @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .section-padding {
+    @apply py-16 md:py-24;
+  }
+
+  .gradient-hero {
+    background: var(--gradient-hero);
+  }
+
+  .gradient-cta {
+    background: var(--gradient-cta);
+  }
+
+  .shadow-card {
+    box-shadow: var(--shadow-lg);
+  }
+  .shadow-card-hover {
+    box-shadow: var(--shadow-xl);
+  }
+  .shadow-navbar {
+    box-shadow: var(--shadow-navbar);
+  }
+  .shadow-blue {
+    box-shadow: var(--shadow-blue);
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent;
+  }
+}
+
+/* 5. Utilities */
+@layer utilities {
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  .animate-fade-in {
+    animation: fade-in 0.6s ease-out forwards;
+  }
+
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .animate-slide-up {
+    animation: slide-up 0.6s ease-out forwards;
+  }
+
+  @keyframes slide-in-left {
+    from {
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  .animate-slide-in-left {
+    animation: slide-in-left 0.6s ease-out forwards;
+  }
+
+  @keyframes slide-in-right {
+    from {
+      opacity: 0;
+      transform: translateX(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  .animate-slide-in-right {
+    animation: slide-in-right 0.6s ease-out forwards;
+  }
 }
