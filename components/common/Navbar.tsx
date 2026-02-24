@@ -4,10 +4,17 @@ import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const Navbar = () => {
+  const pathname = usePathname();
+  console.log("pathname", pathname);
+
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const hideForMVP = true;
+  const shouldHideMenu = pathname === "/landing";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -32,7 +39,7 @@ const Navbar = () => {
       transition={{ duration: 0.5 }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? "bg-card/95 backdrop-blur-md shadow-navbar"
+          ? "bg-white/70 backdrop-blur-md shadow-navbar"
           : "bg-primary-light"
       }`}
     >
@@ -41,7 +48,7 @@ const Navbar = () => {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
             <div
-              className={`text-2xl md:text-3xl font-bold tracking-tight transition-colors ${
+              className={`text-2xl md:text-3xl font-bold tracking-tight transition-colors cursor-pointer ${
                 isScrolled ? "text-primary" : "text-primary-foreground"
               }`}
             >
@@ -50,65 +57,70 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-6">
-            <button
-              onClick={() => scrollToSection("como-funciona")}
-              className={`text-sm font-medium transition-colors hover:text-primary ${
-                isScrolled
-                  ? "text-foreground"
-                  : "text-primary-foreground/90 hover:text-primary-foreground"
-              }`}
-            >
-              Cómo Funciona
-            </button>
-            <button
-              onClick={() => scrollToSection("beneficios")}
-              className={`text-sm font-medium transition-colors hover:text-primary ${
-                isScrolled
-                  ? "text-foreground"
-                  : "text-primary-foreground/90 hover:text-primary-foreground"
-              }`}
-            >
-              Beneficios
-            </button>
-            <button
-              onClick={() => scrollToSection("calculadora")}
-              className={`text-sm font-medium transition-colors hover:text-primary ${
-                isScrolled
-                  ? "text-foreground"
-                  : "text-primary-foreground/90 hover:text-primary-foreground"
-              }`}
-            >
-              Calculadora
-            </button>
-            <Link
-              href="/propiedades"
-              className={`text-sm font-medium transition-colors hover:text-primary ${
-                isScrolled
-                  ? "text-foreground"
-                  : "text-primary-foreground/90 hover:text-primary-foreground"
-              }`}
-            >
-              Para Inversionistas
-            </Link>
-          </div>
+          {!shouldHideMenu && !hideForMVP && (
+            <div className="hidden md:flex items-center gap-6">
+              <button
+                onClick={() => scrollToSection("como-funciona")}
+                className={`text-sm font-medium transition-colors hover:text-primary cursor-pointer ${
+                  isScrolled
+                    ? "text-foreground"
+                    : "text-primary-foreground/90 hover:text-primary-foreground"
+                }`}
+              >
+                Cómo Funciona
+              </button>
+              <button
+                onClick={() => scrollToSection("beneficios")}
+                className={`text-sm font-medium transition-colors hover:text-primary cursor-pointer ${
+                  isScrolled
+                    ? "text-foreground"
+                    : "text-primary-foreground/90 hover:text-primary-foreground"
+                }`}
+              >
+                Beneficios
+              </button>
+              <button
+                onClick={() => scrollToSection("calculadora")}
+                className={`text-sm font-medium transition-colors hover:text-primary cursor-pointer ${
+                  isScrolled
+                    ? "text-foreground"
+                    : "text-primary-foreground/90 hover:text-primary-foreground"
+                }`}
+              >
+                Calculadora
+              </button>
+              <Link
+                href="/propiedades"
+                className={`text-sm font-medium transition-colors hover:text-primary ${
+                  isScrolled
+                    ? "text-foreground"
+                    : "text-primary-foreground/90 hover:text-primary-foreground"
+                }`}
+              >
+                Para Inversionistas
+              </Link>
+            </div>
+          )}
 
           {/* Desktop Auth Buttons */}
+
           <div className="hidden md:flex items-center gap-3">
-            <Button
-              variant="ghost"
-              className={`transition-colors ${
-                isScrolled
-                  ? "text-foreground hover:bg-muted"
-                  : "text-primary-foreground border-primary-foreground/30 hover:bg-primary-foreground/10"
-              }`}
-            >
-              Iniciar sesión
-            </Button>
+            {!shouldHideMenu && !hideForMVP && (
+              <Button
+                variant="ghost"
+                className={`transition-colors ${
+                  isScrolled
+                    ? "text-foreground hover:bg-muted"
+                    : "text-primary-foreground border-primary-foreground/30 hover:bg-primary-foreground/10"
+                }`}
+              >
+                Iniciar sesión
+              </Button>
+            )}
             <Button
               className={`transition-all ${
                 isScrolled
-                  ? "bg-primary text-primary-foreground hover:bg-primary-dark shadow-blue"
+                  ? " text-primary-foreground shadow-blue"
                   : "bg-primary-foreground text-primary hover:bg-primary-foreground/90"
               }`}
               onClick={() => scrollToSection("registro")}
@@ -118,14 +130,16 @@ const Navbar = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className={`md:hidden p-2 rounded-lg transition-colors ${
-              isScrolled ? "text-foreground" : "text-primary-foreground"
-            }`}
-          >
-            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          {!shouldHideMenu && (
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className={`md:hidden p-2 rounded-lg transition-colors ${
+                isScrolled ? "text-foreground" : "text-primary-foreground"
+              }`}
+            >
+              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          )}
         </div>
       </div>
 
@@ -169,7 +183,7 @@ const Navbar = () => {
                   Iniciar sesión
                 </Button>
                 <Button
-                  className="w-full bg-primary"
+                  className="w-full"
                   onClick={() => scrollToSection("registro")}
                 >
                   Registrarse

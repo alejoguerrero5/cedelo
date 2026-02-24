@@ -6,6 +6,7 @@ import {
   TrendingUp,
   Percent,
   DollarSign,
+  PiggyBank,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import {
@@ -23,53 +24,73 @@ import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 
 const Calculator = () => {
-  const [precioCompra, setPrecioCompra] = useState<string>("200000000");
-  const [precioVenta, setPrecioVenta] = useState<string>("250000000");
-  const [meses, setMeses] = useState<string>("12");
+  const [precioCompra, setPrecioCompra] = useState<string>("300000000");
+  const [precioActual, setPrecioActual] = useState<string>("380000000");
+  const [meses, setMeses] = useState<string>("24");
 
+  // Cálculos
+  // Cálculos
   const results = useMemo(() => {
     const compra = parseFloat(precioCompra) || 0;
-    const venta = parseFloat(precioVenta) || 0;
+    const actual = parseFloat(precioActual) || 0;
     const mesesNum = parseFloat(meses) || 1;
 
-    const ganancia = venta - compra;
-    const roi = compra > 0 ? (ganancia / compra) * 100 : 0;
+    const precioSugerido = compra + (actual - compra) / 2;
+
+    const inversion = compra * 0.3; // 30% del valor inicial
+    const gananciaConNosotros = precioSugerido - Number(precioCompra);
+    const devolverConstructora = -inversion * 0.2; // -20% del pago (aprox 30% del valor inicial)
+
+    const roi = inversion > 0 ? (gananciaConNosotros / inversion) * 100 : 0;
     const roiAnual = mesesNum > 0 ? (roi * 12) / mesesNum : 0;
 
     return {
-      ganancia,
+      precioSugerido,
+      inversion,
+      gananciaConNosotros,
+      devolverConstructora,
       roi,
       roiAnual,
-      isPositive: ganancia >= 0,
+      isPositive: gananciaConNosotros >= 0,
     };
-  }, [precioCompra, precioVenta, meses]);
+  }, [precioCompra, precioActual, meses]);
 
+  // Gráfica de barras
   const barChartData = useMemo(() => {
     const compra = parseFloat(precioCompra) || 0;
-    const venta = parseFloat(precioVenta) || 0;
-    const ganancia = venta - compra;
+    const actual = parseFloat(precioActual) || 0;
+
+    const precioSugerido = compra + (actual - compra) / 2;
+    const inversion = compra * 0.3;
+    const gananciaConNosotros = precioSugerido - Number(precioCompra);
+    const devolverConstructora = -inversion * 0.2;
 
     return [
       {
         name: "Inversión",
-        valor: compra / 1000000,
-        fill: "hsl(var(--muted-foreground))",
-      },
-      {
-        name: "Ganancia",
-        valor: Math.max(ganancia, 0) / 1000000,
+        valor: inversion / 1000000,
         fill: "hsl(var(--primary))",
       },
-      { name: "Total", valor: venta / 1000000, fill: "hsl(var(--chart-1))" },
+      {
+        name: "Ganancia con Nosotros",
+        valor: Math.max(gananciaConNosotros, 0) / 1000000,
+        fill: "#22C55E",
+      },
+      {
+        name: "Devolver Constructora",
+        valor: devolverConstructora / 1000000,
+        fill: "hsl(var(--destructive))",
+      },
     ];
-  }, [precioCompra, precioVenta]);
+  }, [precioCompra, precioActual]);
 
   const projectionData = useMemo(() => {
     const compra = parseFloat(precioCompra) || 0;
-    const venta = parseFloat(precioVenta) || 0;
+    const actual = parseFloat(precioActual) || 0;
     const mesesNum = parseFloat(meses) || 12;
 
-    const tasaMensual = mesesNum > 0 ? (venta - compra) / mesesNum : 0;
+    const precioSugerido = compra + (actual - compra) / 2;
+    const tasaMensual = mesesNum > 0 ? (precioSugerido - compra) / mesesNum : 0;
 
     const data = [];
     for (
@@ -86,12 +107,12 @@ const Calculator = () => {
     if (data[data.length - 1]?.mes !== `Mes ${mesesNum}`) {
       data.push({
         mes: `Mes ${mesesNum}`,
-        valor: venta / 1000000,
+        valor: precioSugerido / 1000000,
       });
     }
 
     return data;
-  }, [precioCompra, precioVenta, meses]);
+  }, [precioCompra, precioActual, meses]);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("es-CO", {
@@ -188,23 +209,23 @@ const Calculator = () => {
 
                   <div className="space-y-2">
                     <Label
-                      htmlFor="precioVenta"
+                      htmlFor="precioActual"
                       className="text-sm font-medium text-foreground"
                     >
-                      Precio de venta deseado (COP)
+                      Precio actual estimado (COP)
                     </Label>
                     <div className="relative">
                       <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                       <Input
-                        id="precioVenta"
+                        id="precioActual"
                         type="text"
                         value={
-                          precioVenta
-                            ? Number(precioVenta).toLocaleString("es-CO")
+                          precioActual
+                            ? Number(precioActual).toLocaleString("es-CO")
                             : ""
                         }
                         onChange={(e) =>
-                          handleInputChange(setPrecioVenta, e.target.value)
+                          handleInputChange(setPrecioActual, e.target.value)
                         }
                         className="pl-12 h-14 text-lg bg-secondary border-border focus:border-primary"
                         placeholder="250,000,000"
@@ -231,26 +252,26 @@ const Calculator = () => {
                   </div>
                 </div>
 
+                <div className="flex items-center justify-between border border-primary rounded-xl p-4 text-center gap-2 mt-6">
+                  <p className="font-medium text-muted-foreground mb-1">
+                    Precio venta aproximado:
+                  </p>
+                  <p className="font-bold text-primary">
+                    {formatCurrency(results.precioSugerido)}
+                  </p>
+                </div>
+
                 {/* Results Cards */}
-                <div className="mt-8 grid grid-cols-3 gap-3">
-                  <div className="bg-secondary rounded-xl p-4 text-center">
-                    <TrendingUp className="w-5 h-5 text-primary mx-auto mb-2" />
-                    <p className="text-xs text-muted-foreground mb-1">
-                      Ganancia
-                    </p>
-                    <p
-                      className={`text-sm font-bold ${results.isPositive ? "text-primary" : "text-destructive"}`}
-                    >
-                      {formatCurrency(results.ganancia)}
-                    </p>
-                  </div>
+                <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-3">
                   <div className="bg-secondary rounded-xl p-4 text-center">
                     <Percent className="w-5 h-5 text-primary mx-auto mb-2" />
                     <p className="text-xs text-muted-foreground mb-1">
                       ROI Total
                     </p>
                     <p
-                      className={`text-sm font-bold ${results.isPositive ? "text-primary" : "text-destructive"}`}
+                      className={`text-sm font-bold ${
+                        results.isPositive ? "text-primary" : "text-destructive"
+                      }`}
                     >
                       {results.roi.toFixed(1)}%
                     </p>
@@ -261,10 +282,50 @@ const Calculator = () => {
                       ROI Anual
                     </p>
                     <p
-                      className={`text-sm font-bold ${results.isPositive ? "text-primary" : "text-destructive"}`}
+                      className={`text-sm font-bold ${
+                        results.isPositive ? "text-primary" : "text-destructive"
+                      }`}
                     >
                       {results.roiAnual.toFixed(1)}%
                     </p>
+                  </div>
+                  {/* Inversión */}
+                  <div className="bg-secondary rounded-xl p-4 text-center">
+                    <DollarSign className="w-5 h-5 text-primary mx-auto mb-2" />
+                    <p className="text-xs text-muted-foreground mb-1">
+                      Inversión
+                    </p>
+                    <p className="text-sm font-bold text-primary">
+                      {formatCurrency(results.inversion)}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {/* Ganancia con nosotros */}
+                  <div className="bg-green-500 rounded-xl p-4 text-center">
+                    <PiggyBank className="w-5 h-5 text-white mx-auto mb-2" />
+                    <p className="text-sm font-medium text-white mb-1">
+                      Ganancia con nosotros
+                    </p>
+                    <div className="p-2 bg-white rounded-lg">
+                      <p className={`text font-bold text-green-500`}>
+                        {formatCurrency(results.gananciaConNosotros)}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Si devuelve a constructora */}
+                  <div className="bg-destructive rounded-xl p-4 text-center">
+                    <Percent className="w-5 h-5 text-white mx-auto mb-2" />
+                    <p className="text-sm font-medium text-white mb-1">
+                      Si devuelves a constructora
+                    </p>
+                    <div className="p-2 bg-white rounded-lg">
+                      <p className="text font-bold text-destructive">
+                        {formatCurrency(results.devolverConstructora)}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -307,9 +368,10 @@ const Calculator = () => {
                           ]}
                           contentStyle={{
                             backgroundColor: "hsl(var(--card))",
-                            border: "1px solid hsl(var(--border))",
+                            border: "1px solid hsl(var(--primary))",
                             borderRadius: "8px",
-                            color: "hsl(var(--foreground))",
+                            fontSize: "14px",
+                            fontWeight: "500",
                           }}
                         />
                         <Bar dataKey="valor" radius={[4, 4, 0, 0]} />
@@ -350,9 +412,10 @@ const Calculator = () => {
                           ]}
                           contentStyle={{
                             backgroundColor: "hsl(var(--card))",
-                            border: "1px solid hsl(var(--border))",
+                            border: "1px solid hsl(var(--primary))",
                             borderRadius: "8px",
-                            color: "hsl(var(--foreground))",
+                            fontSize: "14px",
+                            fontWeight: "500",
                           }}
                         />
                         <Line

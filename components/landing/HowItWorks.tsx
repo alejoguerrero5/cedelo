@@ -52,19 +52,18 @@ const HowItWorks = () => {
 
         {/* Steps */}
 
-        <div className="grid md:grid-cols-3 gap-8 lg:gap-12 ">
+        <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
           {steps.map((step, index) => (
-            <motion.div
-              key={step.number}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.15 }}
-              className="relative"
-            >
-              <div className="bg-white rounded-2xl p-8 shadow-card hover:shadow-card-hover transition-all duration-300 h-full group">
+            <div key={step.number} className="relative">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.15 }}
+                className="bg-white rounded-2xl p-8 shadow-card hover:shadow-card-hover transition-all duration-300 h-full group"
+              >
                 {/* Step Number */}
-                <div className="absolute -top-4 left-8 bg-primary text-primary-foreground text-sm font-bold px-4 py-1.5 rounded-full">
+                <div className="absolute -top-4 left-8 bg-[#22C55E] text-primary-foreground text-sm font-bold px-4 py-1.5 rounded-full">
                   Paso {step.number}
                 </div>
 
@@ -80,11 +79,11 @@ const HowItWorks = () => {
                 <p className="text-muted-foreground leading-relaxed">
                   {step.description}
                 </p>
-              </div>
+              </motion.div>
 
               {/* Arrow for Mobile/Tablet */}
               {index < steps.length - 1 && (
-                <div className="flex justify-center my-4 md:hidden">
+                <div className="md:hidden flex justify-center -mt-4">
                   <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
                     <svg
                       className="w-4 h-4 text-primary rotate-90"
@@ -102,7 +101,7 @@ const HowItWorks = () => {
                   </div>
                 </div>
               )}
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>

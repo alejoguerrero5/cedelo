@@ -89,11 +89,7 @@ const Hero = () => {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="flex flex-col sm:flex-row gap-4"
           >
-            <Button
-              size="lg"
-              onClick={() => scrollToSection("registro")}
-              className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 shadow-xl text-base px-8 py-6 group"
-            >
+            <Button size="lg" onClick={() => scrollToSection("registro")}>
               Publica tu propiedad gratis
               <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
             </Button>
@@ -101,7 +97,7 @@ const Hero = () => {
               size="lg"
               variant="outline"
               onClick={() => scrollToSection("como-funciona")}
-              className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 text-base px-8 py-6"
+              className="border-primary-foreground/30 text-primary-foreground bg-primary hover:bg-primary-foreground/10 text-base px-8 py-6"
             >
               Conoce cómo funciona
             </Button>
@@ -114,22 +110,6 @@ const Hero = () => {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="flex flex-wrap gap-8 mt-12 pt-8 border-t border-primary-foreground/20"
           >
-            <div>
-              <div className="text-3xl md:text-4xl font-bold text-primary-foreground">
-                500+
-              </div>
-              <div className="text-sm text-primary-foreground/70">
-                Cesiones exitosas
-              </div>
-            </div>
-            <div>
-              <div className="text-3xl md:text-4xl font-bold text-primary-foreground">
-                $50M+
-              </div>
-              <div className="text-sm text-primary-foreground/70">
-                En transacciones
-              </div>
-            </div>
             <div>
               <div className="text-3xl md:text-4xl font-bold text-primary-foreground">
                 15%
