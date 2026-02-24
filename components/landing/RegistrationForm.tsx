@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Send, CheckCircle2 } from "lucide-react";
+import { useForm, Controller } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -35,84 +36,56 @@ const cities = [
 const propertyTypes = [
   { value: "apartamento", label: "Apartamento" },
   { value: "casa", label: "Casa" },
-  { value: "local", label: "Local comercial" },
-  { value: "oficina", label: "Oficina" },
 ];
+
+type FormData = {
+  nombre: string;
+  email: string;
+  telefono: string;
+  ciudad: string;
+  tipoProyecto: string;
+  esVIS: string;
+  aceptaTerminos: boolean;
+};
 
 const RegistrationForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [formData, setFormData] = useState({
-    nombre: "",
-    email: "",
-    telefono: "",
-    ciudad: "",
-    tipoProyecto: "",
-    esVIS: "",
-    aceptaTerminos: false,
+  const [submittedData, setSubmittedData] = useState<FormData | null>(null);
+
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
+    formState: { errors },
+  } = useForm<FormData>({
+    defaultValues: {
+      nombre: "",
+      email: "",
+      telefono: "",
+      ciudad: "",
+      tipoProyecto: "",
+      esVIS: "",
+      aceptaTerminos: false,
+    },
   });
-  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {};
-
-    if (!formData.nombre.trim()) {
-      newErrors.nombre = "El nombre es requerido";
-    } else if (formData.nombre.trim().length < 3) {
-      newErrors.nombre = "El nombre debe tener al menos 3 caracteres";
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = "El email es requerido";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Ingresa un email válido";
-    }
-
-    if (!formData.telefono.trim()) {
-      newErrors.telefono = "El teléfono es requerido";
-    } else if (!/^\d{7,15}$/.test(formData.telefono.replace(/\s/g, ""))) {
-      newErrors.telefono = "Ingresa un teléfono válido";
-    }
-
-    if (!formData.ciudad) {
-      newErrors.ciudad = "Selecciona una ciudad";
-    }
-
-    if (!formData.tipoProyecto) {
-      newErrors.tipoProyecto = "Selecciona el tipo de proyecto";
-    }
-
-    if (!formData.esVIS) {
-      newErrors.esVIS = "Selecciona si el proyecto es VIS o No VIS";
-    }
-
-    if (!formData.aceptaTerminos) {
-      newErrors.aceptaTerminos = "Debes aceptar los términos y condiciones";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!validateForm()) {
-      toast.error("Por favor corrige los errores en el formulario");
-      return;
-    }
-
+  const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
 
-    // Simulate API call
+    // Simula llamada API
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
     setIsSubmitting(false);
+    setSubmittedData(data);
     setIsSubmitted(true);
+    console.log("Datos del formulario:", data);
     toast.success("¡Registro exitoso! Te contactaremos pronto.");
   };
 
-  if (isSubmitted) {
+  if (isSubmitted && submittedData) {
+    const isVIS = submittedData.esVIS === "vis";
     return (
       <section id="registro" className="section-padding bg-secondary">
         <div className="container-section">
@@ -121,28 +94,29 @@ const RegistrationForm = () => {
             animate={{ opacity: 1, scale: 1 }}
             className="max-w-lg mx-auto text-center bg-card rounded-3xl p-12 shadow-card"
           >
-            <div className="w-20 h-20 rounded-full bg-success/10 flex items-center justify-center mx-auto mb-6">
-              <CheckCircle2 className="w-10 h-10 text-success" />
+            <div
+              className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 ${
+                isVIS ? "bg-destructive/10" : "bg-success/10"
+              }`}
+            >
+              <CheckCircle2
+                className={`w-10 h-10 ${
+                  isVIS ? "text-destructive" : "text-success"
+                }`}
+              />
             </div>
             <h3 className="text-2xl font-bold text-foreground mb-3">
-              ¡Gracias por registrarte!
+              {isVIS ? "Registro no permitido" : "¡Gracias por registrarte!"}
             </h3>
             <p className="text-muted-foreground mb-6">
-              Hemos recibido tu información. Un asesor de CEDELO se comunicará
-              contigo en las próximas 24 horas.
+              {isVIS
+                ? "Lamentablemente, por el momento no es posible registrar propiedades de tipo VIS."
+                : "Hemos recibido tu información. Un asesor de CEDELO se comunicará contigo en las próximas 24 horas."}
             </p>
             <Button
               onClick={() => {
                 setIsSubmitted(false);
-                setFormData({
-                  nombre: "",
-                  email: "",
-                  telefono: "",
-                  ciudad: "",
-                  tipoProyecto: "",
-                  esVIS: "",
-                  aceptaTerminos: false,
-                });
+                reset();
               }}
               variant="outline"
             >
@@ -157,7 +131,6 @@ const RegistrationForm = () => {
   return (
     <section id="registro" className="section-padding bg-secondary">
       <div className="container-section">
-        {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -177,7 +150,6 @@ const RegistrationForm = () => {
           </p>
         </motion.div>
 
-        {/* Form */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -186,7 +158,7 @@ const RegistrationForm = () => {
           className="max-w-xl mx-auto"
         >
           <form
-            onSubmit={handleSubmit}
+            onSubmit={handleSubmit(onSubmit)}
             className="bg-card rounded-3xl p-8 md:p-10 shadow-card border border-border/50"
           >
             <div className="space-y-6">
@@ -201,17 +173,22 @@ const RegistrationForm = () => {
                 <Input
                   id="nombre"
                   type="text"
-                  value={formData.nombre}
-                  onChange={(e) =>
-                    setFormData({ ...formData, nombre: e.target.value })
-                  }
                   placeholder="Juan Carlos Rodríguez"
                   className={`h-12 bg-secondary border-border focus:border-primary ${
                     errors.nombre ? "border-destructive" : ""
                   }`}
+                  {...register("nombre", {
+                    required: "El nombre es requerido",
+                    minLength: {
+                      value: 3,
+                      message: "Debe tener al menos 3 caracteres",
+                    },
+                  })}
                 />
                 {errors.nombre && (
-                  <p className="text-sm text-destructive">{errors.nombre}</p>
+                  <p className="text-sm text-destructive">
+                    {errors.nombre.message}
+                  </p>
                 )}
               </div>
 
@@ -226,17 +203,22 @@ const RegistrationForm = () => {
                 <Input
                   id="email"
                   type="email"
-                  value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
                   placeholder="ejemplo@correo.com"
                   className={`h-12 bg-secondary border-border focus:border-primary ${
                     errors.email ? "border-destructive" : ""
                   }`}
+                  {...register("email", {
+                    required: "El email es requerido",
+                    pattern: {
+                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                      message: "Ingresa un email válido",
+                    },
+                  })}
                 />
                 {errors.email && (
-                  <p className="text-sm text-destructive">{errors.email}</p>
+                  <p className="text-sm text-destructive">
+                    {errors.email.message}
+                  </p>
                 )}
               </div>
 
@@ -251,82 +233,99 @@ const RegistrationForm = () => {
                 <Input
                   id="telefono"
                   type="tel"
-                  value={formData.telefono}
-                  onChange={(e) =>
-                    setFormData({ ...formData, telefono: e.target.value })
-                  }
                   placeholder="300 123 4567"
                   className={`h-12 bg-secondary border-border focus:border-primary ${
                     errors.telefono ? "border-destructive" : ""
                   }`}
+                  {...register("telefono", {
+                    required: "El teléfono es requerido",
+                    pattern: {
+                      value: /^\d{10,10}$/,
+                      message: "Ingresa un teléfono válido",
+                    },
+                  })}
                 />
                 {errors.telefono && (
-                  <p className="text-sm text-destructive">{errors.telefono}</p>
+                  <p className="text-xs text-destructive">
+                    {errors.telefono.message}
+                  </p>
                 )}
               </div>
 
-              {/* Ciudad & Tipo (Two columns on larger screens) */}
+              {/* Ciudad & Tipo */}
               <div className="grid sm:grid-cols-2 gap-6">
                 {/* Ciudad */}
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-foreground">
                     Ciudad
                   </Label>
-                  <Select
-                    value={formData.ciudad}
-                    onValueChange={(value) =>
-                      setFormData({ ...formData, ciudad: value })
-                    }
-                  >
-                    <SelectTrigger
-                      className={`h-12 bg-secondary border-border ${
-                        errors.ciudad ? "border-destructive" : ""
-                      }`}
-                    >
-                      <SelectValue placeholder="Selecciona ciudad" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {cities.map((city) => (
-                        <SelectItem key={city} value={city}>
-                          {city}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Controller
+                    name="ciudad"
+                    control={control}
+                    rules={{ required: "Selecciona una ciudad" }}
+                    render={({ field }) => (
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger
+                          className={`h-12 bg-secondary border-border ${
+                            errors.ciudad ? "border-destructive" : ""
+                          }`}
+                        >
+                          <SelectValue placeholder="Selecciona ciudad" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {cities.map((city) => (
+                            <SelectItem key={city} value={city}>
+                              {city}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
                   {errors.ciudad && (
-                    <p className="text-sm text-destructive">{errors.ciudad}</p>
+                    <p className="text-xs text-destructive">
+                      {errors.ciudad.message}
+                    </p>
                   )}
                 </div>
 
-                {/* Tipo de Proyecto */}
+                {/* Tipo Proyecto */}
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-foreground">
                     Tipo de proyecto
                   </Label>
-                  <Select
-                    value={formData.tipoProyecto}
-                    onValueChange={(value) =>
-                      setFormData({ ...formData, tipoProyecto: value })
-                    }
-                  >
-                    <SelectTrigger
-                      className={`h-12 bg-secondary border-border ${
-                        errors.tipoProyecto ? "border-destructive" : ""
-                      }`}
-                    >
-                      <SelectValue placeholder="Selecciona tipo" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {propertyTypes.map((type) => (
-                        <SelectItem key={type.value} value={type.value}>
-                          {type.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Controller
+                    name="tipoProyecto"
+                    control={control}
+                    rules={{ required: "Selecciona el tipo de proyecto" }}
+                    render={({ field }) => (
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger
+                          className={`h-12 bg-secondary border-border ${
+                            errors.tipoProyecto ? "border-destructive" : ""
+                          }`}
+                        >
+                          <SelectValue placeholder="Selecciona tipo" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {propertyTypes.map((type) => (
+                            <SelectItem key={type.value} value={type.value}>
+                              {type.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
                   {errors.tipoProyecto && (
-                    <p className="text-sm text-destructive">
-                      {errors.tipoProyecto}
+                    <p className="text-xs text-destructive">
+                      {errors.tipoProyecto.message}
                     </p>
                   )}
                 </div>
@@ -337,73 +336,86 @@ const RegistrationForm = () => {
                 <Label className="text-sm font-medium text-foreground">
                   Tipo de vivienda
                 </Label>
-                <RadioGroup
-                  value={formData.esVIS}
-                  onValueChange={(value) =>
-                    setFormData({ ...formData, esVIS: value })
-                  }
-                  className="flex gap-6"
-                >
-                  <div className="flex items-center gap-2">
-                    <RadioGroupItem value="vis" id="vis" />
-                    <Label
-                      htmlFor="vis"
-                      className="text-sm text-foreground cursor-pointer"
+                <Controller
+                  name="esVIS"
+                  control={control}
+                  rules={{
+                    required: "Selecciona si el proyecto es VIS o No VIS",
+                  }}
+                  render={({ field }) => (
+                    <RadioGroup
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      className="flex gap-6"
                     >
-                      VIS (Vivienda de Interés Social)
-                    </Label>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <RadioGroupItem value="no-vis" id="no-vis" />
-                    <Label
-                      htmlFor="no-vis"
-                      className="text-sm text-foreground cursor-pointer"
-                    >
-                      No VIS
-                    </Label>
-                  </div>
-                </RadioGroup>
+                      <div className="flex items-center gap-2">
+                        <RadioGroupItem value="vis" id="vis" />
+                        <Label
+                          htmlFor="vis"
+                          className="text-sm text-foreground cursor-pointer"
+                        >
+                          VIS (Vivienda de Interés Social)
+                        </Label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <RadioGroupItem value="no-vis" id="no-vis" />
+                        <Label
+                          htmlFor="no-vis"
+                          className="text-sm text-foreground cursor-pointer"
+                        >
+                          No VIS
+                        </Label>
+                      </div>
+                    </RadioGroup>
+                  )}
+                />
                 {errors.esVIS && (
-                  <p className="text-sm text-destructive">{errors.esVIS}</p>
+                  <p className="text-xs text-destructive">
+                    {errors.esVIS.message}
+                  </p>
                 )}
               </div>
 
               {/* Términos */}
               <div className="space-y-2">
-                <div className="flex items-start gap-3">
-                  <Checkbox
-                    id="terminos"
-                    checked={formData.aceptaTerminos}
-                    onCheckedChange={(checked) =>
-                      setFormData({
-                        ...formData,
-                        aceptaTerminos: checked === true,
-                      })
-                    }
-                    className="mt-0.5"
-                  />
-                  <Label
-                    htmlFor="terminos"
-                    className="text-sm text-muted-foreground leading-relaxed cursor-pointer"
-                  >
-                    Acepto los{" "}
-                    <a href="#" className="text-primary hover:underline">
-                      términos y condiciones
-                    </a>{" "}
-                    y la{" "}
-                    <a href="#" className="text-primary hover:underline">
-                      política de privacidad
-                    </a>
-                  </Label>
-                </div>
+                <Controller
+                  name="aceptaTerminos"
+                  control={control}
+                  rules={{
+                    required: "Debes aceptar los términos y condiciones",
+                  }}
+                  render={({ field }) => (
+                    <div className="flex items-start gap-3">
+                      <Checkbox
+                        id="terminos"
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        className="mt-0.5"
+                      />
+                      <Label
+                        htmlFor="terminos"
+                        className="text-sm text-muted-foreground leading-relaxed cursor-pointer"
+                      >
+                        Acepto los{" "}
+                        <a href="#" className="text-primary hover:underline">
+                          términos y condiciones
+                        </a>{" "}
+                        y la{" "}
+                        <a href="#" className="text-primary hover:underline">
+                          política de privacidad
+                        </a>
+                      </Label>
+                    </div>
+                  )}
+                />
                 {errors.aceptaTerminos && (
-                  <p className="text-sm text-destructive">
-                    {errors.aceptaTerminos}
+                  <p className="text-xs text-destructive">
+                    {errors.aceptaTerminos.message}
                   </p>
                 )}
               </div>
 
-              {/* Submit Button */}
+              {/* Submit */}
               <Button
                 type="submit"
                 size="lg"

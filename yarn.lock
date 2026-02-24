@@ -2448,6 +2448,7 @@ __metadata:
     next-themes: "npm:^0.4.6"
     react: "npm:19.2.3"
     react-dom: "npm:19.2.3"
+    react-hook-form: "npm:^7.71.2"
     react-router-dom: "npm:^7.13.0"
     recharts: "npm:^3.7.0"
     sonner: "npm:^2.0.7"
@@ -4680,6 +4681,15 @@ __metadata:
   peerDependencies:
     react: ^19.2.3
   checksum: 10c0/dc43f7ede06f46f3acc16ee83107c925530de9b91d1d0b3824583814746ff4c498ea64fd65cd83aba363205268adff52e2827c582634ae7b15069deaeabc4892
+  languageName: node
+  linkType: hard
+
+"react-hook-form@npm:^7.71.2":
+  version: 7.71.2
+  resolution: "react-hook-form@npm:7.71.2"
+  peerDependencies:
+    react: ^16.8.0 || ^17 || ^18 || ^19
+  checksum: 10c0/bff61c229f5f2516e650325e0c450146cb8a08dc323e5e9aa0753eb937be0b66fe17f40a7b4be9aabc2b5cb770d03de07db7f4912c6c9452a86924072cc1cb46
   languageName: node
   linkType: hard
 
