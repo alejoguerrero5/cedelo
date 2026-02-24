@@ -62,7 +62,7 @@ const HowItWorks = () => {
               transition={{ duration: 0.5, delay: index * 0.15 }}
               className="relative"
             >
-              <div className="bg-card rounded-2xl p-8 shadow-card hover:shadow-card-hover transition-all duration-300 h-full group">
+              <div className="bg-white rounded-2xl p-8 shadow-card hover:shadow-card-hover transition-all duration-300 h-full group">
                 {/* Step Number */}
                 <div className="absolute -top-4 left-8 bg-primary text-primary-foreground text-sm font-bold px-4 py-1.5 rounded-full">
                   Paso {step.number}
