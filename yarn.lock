@@ -665,6 +665,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@netlify/plugin-nextjs@npm:^5.15.8":
+  version: 5.15.8
+  resolution: "@netlify/plugin-nextjs@npm:5.15.8"
+  checksum: 10c0/7bfff74ab246dceb9112e66c465d47c17f4e1fbaf26ca449e33adc8828f915dc5cb6f4d2f0a585cae5a25ba292289757c73f173b8e54fbea101923797b91ee15
+  languageName: node
+  linkType: hard
+
 "@next/env@npm:16.1.6":
   version: 16.1.6
   resolution: "@next/env@npm:16.1.6"
@@ -2425,6 +2432,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "cedelo@workspace:."
   dependencies:
+    "@netlify/plugin-nextjs": "npm:^5.15.8"
     "@radix-ui/react-accordion": "npm:^1.2.12"
     "@radix-ui/react-checkbox": "npm:^1.3.3"
     "@radix-ui/react-label": "npm:^2.1.8"
