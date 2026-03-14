@@ -125,7 +125,7 @@ const Navbar = () => {
               }`}
               onClick={() => scrollToSection("registro")}
             >
-              Registrarse
+              Cuéntanos de ti
             </Button>
           </div>
 
