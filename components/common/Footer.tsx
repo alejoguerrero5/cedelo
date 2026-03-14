@@ -17,9 +17,8 @@ const Footer = () => {
           <div className="lg:col-span-1">
             <div className="text-3xl font-bold mb-4">CEDELO</div>
             <p className="text-primary-foreground/70 text-sm leading-relaxed mb-6">
-              La plataforma líder en Colombia para ceder contratos de
-              compraventa de vivienda sobre planos de manera segura y
-              transparente.
+              Primera plataforma en Colombia para ceder contratos de compraventa
+              de vivienda sobre planos de manera segura y transparente.
             </p>
             {/* Social Icons */}
             {/*             <div className="flex gap-3">
@@ -147,7 +146,7 @@ const Footer = () => {
                   href="mailto:info@cedelo.co"
                   className="text-primary-foreground/70 hover:text-primary-foreground transition-colors text-sm"
                 >
-                  info@cedelo.co
+                  cedeloapp@gmail.com
                 </a>
               </li>
             </ul>

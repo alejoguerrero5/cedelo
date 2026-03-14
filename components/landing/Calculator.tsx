@@ -319,7 +319,7 @@ const Calculator = () => {
                   <div className="bg-destructive rounded-xl p-4 text-center">
                     <Percent className="w-5 h-5 text-white mx-auto mb-2" />
                     <p className="text-sm font-medium text-white mb-1">
-                      Si devuelves a constructora
+                      Si decistes
                     </p>
                     <div className="p-2 bg-white rounded-lg">
                       <p className="text font-bold text-destructive">

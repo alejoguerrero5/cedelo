@@ -27,7 +27,7 @@ const faqs = [
   {
     question: "¿Qué documentos necesito?",
     answer:
-      "Necesitarás el contrato de promesa de compraventa original, documentos de identificación, comprobantes de los pagos realizados a la constructora, y el paz y salvo de cuotas. Nuestro equipo te guiará en la recopilación de todos los documentos necesarios.",
+      "Necesitarás el contrato de promesa de compraventa original, documentos de identificación y comprobantes de los pagos realizados a la constructora. Nuestro equipo te guiará en la recopilación de todos los documentos necesarios.",
   },
   {
     question: "¿Es legal ceder mi contrato?",
