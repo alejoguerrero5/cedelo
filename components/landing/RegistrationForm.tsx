@@ -17,26 +17,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-
-const cities = [
-  "Bogotá",
-  "Medellín",
-  "Cali",
-  "Barranquilla",
-  "Cartagena",
-  "Bucaramanga",
-  "Pereira",
-  "Santa Marta",
-  "Manizales",
-  "Villavicencio",
-  "Ibagué",
-  "Otra ciudad",
-];
-
-const propertyTypes = [
-  { value: "apartamento", label: "Apartamento" },
-  { value: "casa", label: "Casa" },
-];
+import { cities, propertyTypes } from "@/data/options";
 
 type FormData = {
   nombre: string;
