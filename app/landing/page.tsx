@@ -1,4 +1,3 @@
-import Navbar from "@/components/common/Navbar";
 import Benefits from "@/components/landing/Benefits";
 import Calculator from "@/components/landing/Calculator";
 import FAQ from "@/components/landing/FAQ";
@@ -10,7 +9,6 @@ import Testimonials from "@/components/landing/Testimonials";
 const Landing = () => {
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
       <Hero />
       <HowItWorks />
       <Benefits />
@@ -18,7 +16,6 @@ const Landing = () => {
       <Testimonials />
       <FAQ />
       <RegistrationForm />
-      {/*<Footer /> */}
     </div>
   );
 };

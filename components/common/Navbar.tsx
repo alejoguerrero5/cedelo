@@ -13,8 +13,29 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const hideForMVP = true;
-  const shouldHideMenu = pathname === "/landing";
+  const hideForMVP = false;
+  const shouldHideMenu = pathname === "/landing" || pathname === "/propiedades";
+
+  const showButton = () => {
+    switch (pathname) {
+      case "/propiedades":
+        return null;
+
+      default:
+        return (
+          <Button
+            className={`transition-all ${
+              isScrolled
+                ? " text-primary-foreground shadow-blue"
+                : "bg-primary-foreground text-primary hover:bg-primary-foreground/90"
+            }`}
+            onClick={() => scrollToSection("registro")}
+          >
+            Cuéntanos de ti
+          </Button>
+        );
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -117,16 +138,7 @@ const Navbar = () => {
                 Iniciar sesión
               </Button>
             )}
-            <Button
-              className={`transition-all ${
-                isScrolled
-                  ? " text-primary-foreground shadow-blue"
-                  : "bg-primary-foreground text-primary hover:bg-primary-foreground/90"
-              }`}
-              onClick={() => scrollToSection("registro")}
-            >
-              Cuéntanos de ti
-            </Button>
+            {showButton()}
           </div>
 
           {/* Mobile Menu Button */}
