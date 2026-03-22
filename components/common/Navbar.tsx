@@ -13,7 +13,7 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const hideForMVP = false;
+  const hideForMVP = true;
   const shouldHideMenu = pathname === "/landing" || pathname === "/propiedades";
 
   const showButton = () => {
