@@ -362,10 +362,14 @@ const Calculator = () => {
                           tickFormatter={formatMillions}
                         />
                         <Tooltip
-                          formatter={(value: number | undefined) => [
-                            `$${(value ?? 0).toFixed(0)}M`,
-                            "Valor",
-                          ]}
+                          formatter={(value) => {
+                            const num =
+                              typeof value === "number"
+                                ? value
+                                : Number(value) || 0;
+
+                            return [`$${num.toFixed(0)}M`, "Valor"];
+                          }}
                           contentStyle={{
                             backgroundColor: "hsl(var(--card))",
                             border: "1px solid hsl(var(--primary))",
@@ -406,10 +410,14 @@ const Calculator = () => {
                           tickFormatter={formatMillions}
                         />
                         <Tooltip
-                          formatter={(value: number | undefined) => [
-                            `$${(value ?? 0).toFixed(0)}M`,
-                            "Valor",
-                          ]}
+                          formatter={(value) => {
+                            const num =
+                              typeof value === "number"
+                                ? value
+                                : Number(value) || 0;
+
+                            return [`$${num.toFixed(0)}M`, "Valor"];
+                          }}
                           contentStyle={{
                             backgroundColor: "hsl(var(--card))",
                             border: "1px solid hsl(var(--primary))",
