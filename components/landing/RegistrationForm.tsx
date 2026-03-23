@@ -20,13 +20,13 @@ import { toast } from "sonner";
 import { cities, propertyTypes } from "@/data/options";
 
 type FormData = {
-  nombre: string;
+  name: string;
   email: string;
-  telefono: string;
-  ciudad: string;
-  tipoProyecto: string;
-  esVIS: string;
-  aceptaTerminos: boolean;
+  phone: string;
+  city: string;
+  projectType: string;
+  isVIS: string;
+  terms: boolean;
 };
 
 const RegistrationForm = () => {
@@ -42,31 +42,48 @@ const RegistrationForm = () => {
     formState: { errors },
   } = useForm<FormData>({
     defaultValues: {
-      nombre: "",
+      name: "",
       email: "",
-      telefono: "",
-      ciudad: "",
-      tipoProyecto: "",
-      esVIS: "",
-      aceptaTerminos: false,
+      phone: "",
+      city: "",
+      projectType: "",
+      isVIS: "",
+      terms: false,
     },
   });
 
   const onSubmit = async (data: FormData) => {
-    setIsSubmitting(true);
+    try {
+      setIsSubmitting(true);
 
-    // Simula llamada API
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
 
-    setIsSubmitting(false);
-    setSubmittedData(data);
-    setIsSubmitted(true);
-    console.log("Datos del formulario:", data);
-    toast.success("¡Registro exitoso! Te contactaremos pronto.");
+      const result = await res.json();
+
+      if (!res.ok) {
+        throw new Error(result.error || "Error al enviar");
+      }
+
+      setSubmittedData(data);
+      setIsSubmitted(true);
+
+      toast.success("¡Registro exitoso! Te contactaremos pronto.");
+    } catch (error) {
+      console.error(error);
+      toast.error("Error enviando el formulario");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (isSubmitted && submittedData) {
-    const isVIS = submittedData.esVIS === "vis";
+    const isVIS = submittedData.isVIS === "vis";
     return (
       <section id="registro" className="section-padding bg-secondary">
         <div className="container-section">
@@ -156,9 +173,9 @@ const RegistrationForm = () => {
                   type="text"
                   placeholder="Juan Carlos Rodríguez"
                   className={`h-12 bg-secondary border-border focus:border-primary ${
-                    errors.nombre ? "border-destructive" : ""
+                    errors.name ? "border-destructive" : ""
                   }`}
-                  {...register("nombre", {
+                  {...register("name", {
                     required: "El nombre es requerido",
                     minLength: {
                       value: 3,
@@ -166,9 +183,9 @@ const RegistrationForm = () => {
                     },
                   })}
                 />
-                {errors.nombre && (
+                {errors.name && (
                   <p className="text-sm text-destructive">
-                    {errors.nombre.message}
+                    {errors.name.message}
                   </p>
                 )}
               </div>
@@ -216,9 +233,9 @@ const RegistrationForm = () => {
                   type="tel"
                   placeholder="300 123 4567"
                   className={`h-12 bg-secondary border-border focus:border-primary ${
-                    errors.telefono ? "border-destructive" : ""
+                    errors.phone ? "border-destructive" : ""
                   }`}
-                  {...register("telefono", {
+                  {...register("phone", {
                     required: "El teléfono es requerido",
                     pattern: {
                       value: /^\d{10,10}$/,
@@ -226,9 +243,9 @@ const RegistrationForm = () => {
                     },
                   })}
                 />
-                {errors.telefono && (
+                {errors.phone && (
                   <p className="text-xs text-destructive">
-                    {errors.telefono.message}
+                    {errors.phone.message}
                   </p>
                 )}
               </div>
@@ -241,7 +258,7 @@ const RegistrationForm = () => {
                     Ciudad
                   </Label>
                   <Controller
-                    name="ciudad"
+                    name="city"
                     control={control}
                     rules={{ required: "Selecciona una ciudad" }}
                     render={({ field }) => (
@@ -251,7 +268,7 @@ const RegistrationForm = () => {
                       >
                         <SelectTrigger
                           className={`h-12 bg-secondary border-border ${
-                            errors.ciudad ? "border-destructive" : ""
+                            errors.city ? "border-destructive" : ""
                           }`}
                         >
                           <SelectValue placeholder="Selecciona ciudad" />
@@ -266,9 +283,9 @@ const RegistrationForm = () => {
                       </Select>
                     )}
                   />
-                  {errors.ciudad && (
+                  {errors.city && (
                     <p className="text-xs text-destructive">
-                      {errors.ciudad.message}
+                      {errors.city.message}
                     </p>
                   )}
                 </div>
@@ -279,7 +296,7 @@ const RegistrationForm = () => {
                     Tipo de proyecto
                   </Label>
                   <Controller
-                    name="tipoProyecto"
+                    name="projectType"
                     control={control}
                     rules={{ required: "Selecciona el tipo de proyecto" }}
                     render={({ field }) => (
@@ -289,7 +306,7 @@ const RegistrationForm = () => {
                       >
                         <SelectTrigger
                           className={`h-12 bg-secondary border-border ${
-                            errors.tipoProyecto ? "border-destructive" : ""
+                            errors.projectType ? "border-destructive" : ""
                           }`}
                         >
                           <SelectValue placeholder="Selecciona tipo" />
@@ -304,9 +321,9 @@ const RegistrationForm = () => {
                       </Select>
                     )}
                   />
-                  {errors.tipoProyecto && (
+                  {errors.projectType && (
                     <p className="text-xs text-destructive">
-                      {errors.tipoProyecto.message}
+                      {errors.projectType.message}
                     </p>
                   )}
                 </div>
@@ -318,7 +335,7 @@ const RegistrationForm = () => {
                   Tipo de vivienda
                 </Label>
                 <Controller
-                  name="esVIS"
+                  name="isVIS"
                   control={control}
                   rules={{
                     required: "Selecciona si el proyecto es VIS o No VIS",
@@ -350,9 +367,9 @@ const RegistrationForm = () => {
                     </RadioGroup>
                   )}
                 />
-                {errors.esVIS && (
+                {errors.isVIS && (
                   <p className="text-xs text-destructive">
-                    {errors.esVIS.message}
+                    {errors.isVIS.message}
                   </p>
                 )}
               </div>
@@ -360,7 +377,7 @@ const RegistrationForm = () => {
               {/* Términos */}
               <div className="space-y-2">
                 <Controller
-                  name="aceptaTerminos"
+                  name="terms"
                   control={control}
                   rules={{
                     required: "Debes aceptar los términos y condiciones",
@@ -389,9 +406,9 @@ const RegistrationForm = () => {
                     </div>
                   )}
                 />
-                {errors.aceptaTerminos && (
+                {errors.terms && (
                   <p className="text-xs text-destructive">
-                    {errors.aceptaTerminos.message}
+                    {errors.terms.message}
                   </p>
                 )}
               </div>
