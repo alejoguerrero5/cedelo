@@ -14,10 +14,20 @@ export async function POST(req: Request) {
     //Save on DB
     const { error } = await supabase
       .from("leads")
-      .insert([{ name, email, phone, city, projectType, isVIS, terms }]);
+      .insert([
+        {
+          name,
+          email,
+          phone,
+          city,
+          project_type: projectType,
+          is_VIS: isVIS,
+          terms,
+        },
+      ]);
 
     if (error) {
-      console.error(error);
+      console.error("Supabase error:", error);
       return new Response(JSON.stringify({ error: "Error guardando lead" }), {
         status: 500,
       });
@@ -110,6 +120,7 @@ export async function POST(req: Request) {
 
     return new Response(JSON.stringify({ ok: true }), { status: 200 });
   } catch (error) {
+    console.error("API /api/contact error:", error);
     return new Response(JSON.stringify({ error: "Error en la API" }), {
       status: 500,
     });
