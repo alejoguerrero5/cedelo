@@ -1,11 +1,11 @@
 import { supabase } from "@/lib/supabase";
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 
 export async function GET(
-  req: Request,
-  { params }: { params: { id: string } },
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> },
 ) {
-  const { id } = params;
+  const { id } = await context.params;
 
   const { data, error } = await supabase
     .from("properties")
@@ -21,10 +21,10 @@ export async function GET(
 }
 
 export async function PATCH(
-  req: Request,
-  { params }: { params: { id: string } },
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> },
 ) {
-  const { id } = params;
+  const { id } = await context.params;
   const body = await req.json();
   const updates: Record<string, unknown> = {};
 
