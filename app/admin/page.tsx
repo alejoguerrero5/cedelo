@@ -3,16 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Pencil, Plus, Trash2 } from "lucide-react";
-import { mockProperties } from "@/data/mockProperties";
 import type { Property } from "@/types/property";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import {
-  CREATED_PROJECTS_KEY,
-  DELETED_IDS_KEY,
-  OVERRIDES_KEY,
-} from "@/lib/adminStorage";
 import {
   Table,
   TableBody,
@@ -21,8 +15,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-type PropertyOverrides = Record<number, Partial<Property>>;
 
 function formatPrice(price: number) {
   return `COP $${price}M`;
@@ -37,61 +29,36 @@ function statusVariant(status: Property["status"]) {
 }
 
 export default function AdminDashboardPage() {
-  const [deletedIds, setDeletedIds] = useState<Set<number>>(new Set());
-  const [overrides, setOverrides] = useState<PropertyOverrides>({});
-  const [createdProjects, setCreatedProjects] = useState<Property[]>([]);
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(DELETED_IDS_KEY);
-      const ids: unknown = raw ? JSON.parse(raw) : [];
-      if (Array.isArray(ids)) {
-        setDeletedIds(new Set(ids.filter((x) => typeof x === "number")));
+    const loadProperties = async () => {
+      const res = await fetch("/api/properties");
+      if (!res.ok) {
+        toast.error("No se pudieron cargar los proyectos");
+        setLoading(false);
+        return;
       }
-    } catch {
-      // ignore
-    }
 
-    try {
-      const raw = localStorage.getItem(OVERRIDES_KEY);
-      const ov: unknown = raw ? JSON.parse(raw) : {};
-      if (ov && typeof ov === "object") {
-        const normalized: PropertyOverrides = {};
-        for (const [k, v] of Object.entries(ov as Record<string, unknown>)) {
-          const id = Number(k);
-          if (!Number.isFinite(id)) continue;
-          if (v && typeof v === "object")
-            normalized[id] = v as Partial<Property>;
-        }
-        setOverrides(normalized);
-      }
-    } catch {
-      // ignore
-    }
+      const data = await res.json();
+      setProperties(data ?? []);
+      setLoading(false);
+    };
 
-    try {
-      const raw = localStorage.getItem(CREATED_PROJECTS_KEY);
-      const list: unknown = raw ? JSON.parse(raw) : [];
-      if (Array.isArray(list)) {
-        setCreatedProjects(list as Property[]);
-      }
-    } catch {
-      // ignore
-    }
+    loadProperties();
   }, []);
 
-  const rows = useMemo(() => {
-    const base = [...mockProperties, ...createdProjects];
-    return base
-      .filter((p) => !deletedIds.has(p.id))
-      .map((p) => ({ ...p, ...(overrides[p.id] ?? {}) }))
-      .sort(
+  const rows = useMemo(
+    () =>
+      [...properties].sort(
         (a, b) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-      );
-  }, [createdProjects, deletedIds, overrides]);
+      ),
+    [properties],
+  );
 
-  const softDelete = (id: number) => {
+  const softDelete = async (id: string) => {
     const property = rows.find((p) => p.id === id);
     if (!property) return;
 
@@ -100,13 +67,18 @@ export default function AdminDashboardPage() {
     );
     if (!ok) return;
 
-    setDeletedIds((prev) => {
-      const next = new Set(prev);
-      next.add(id);
-      localStorage.setItem(DELETED_IDS_KEY, JSON.stringify(Array.from(next)));
-      return next;
+    const res = await fetch(`/api/properties/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ is_deleted: true }),
     });
 
+    if (!res.ok) {
+      toast.error("No se pudo eliminar el proyecto");
+      return;
+    }
+
+    setProperties((prev) => prev.filter((item) => item.id !== id));
     toast.success("Proyecto eliminado");
   };
 
@@ -197,7 +169,7 @@ export default function AdminDashboardPage() {
                       variant="outline"
                       className="border-primary text-primary"
                     >
-                      {p.roi}%
+                      {p?.roi}%
                     </Badge>
                   </TableCell>
 
