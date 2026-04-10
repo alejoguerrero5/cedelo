@@ -2,7 +2,7 @@ import { Property } from "@/types/property";
 
 export const mockProperties: Property[] = [
   {
-    id: 1,
+    id: "1",
     title: "Apartamento Sabaneta Central",
     city: "Medellín",
     neighborhood: "Sabaneta",
@@ -21,7 +21,7 @@ export const mockProperties: Property[] = [
     createdAt: "2026-01-05",
   },
   {
-    id: 2,
+    id: "2",
     title: "Apartamento Itagüí Sur",
     city: "Medellín",
     neighborhood: "Itagüí",
@@ -40,7 +40,7 @@ export const mockProperties: Property[] = [
     createdAt: "2025-12-10",
   },
   {
-    id: 3,
+    id: "3",
     title: "Apartamento Envigado Loma del Escobero",
     city: "Medellín",
     neighborhood: "Envigado",
@@ -59,7 +59,7 @@ export const mockProperties: Property[] = [
     createdAt: "2025-11-20",
   },
   {
-    id: 4,
+    id: "4",
     title: "Apartamento Belén Rosales",
     city: "Medellín",
     neighborhood: "Belén",
@@ -78,7 +78,7 @@ export const mockProperties: Property[] = [
     createdAt: "2026-02-01",
   },
   {
-    id: 5,
+    id: "5",
     title: "Apartamento Laureles Segundo Parque",
     city: "Medellín",
     neighborhood: "Laureles",
@@ -97,7 +97,7 @@ export const mockProperties: Property[] = [
     createdAt: "2025-10-15",
   },
   {
-    id: 6,
+    id: "6",
     title: "Apartamento El Poblado Loma de los Parra",
     city: "Medellín",
     neighborhood: "El Poblado",
@@ -116,7 +116,7 @@ export const mockProperties: Property[] = [
     createdAt: "2025-11-05",
   },
   {
-    id: 7,
+    id: "7",
     title: "Apartamento Ciudad del Río",
     city: "Medellín",
     neighborhood: "Ciudad del Río",
@@ -135,7 +135,7 @@ export const mockProperties: Property[] = [
     createdAt: "2025-12-01",
   },
   {
-    id: 8,
+    id: "8",
     title: "Apartamento Envigado Zona Centro",
     city: "Medellín",
     neighborhood: "Envigado",
@@ -154,7 +154,7 @@ export const mockProperties: Property[] = [
     createdAt: "2026-01-18",
   },
   {
-    id: 9,
+    id: "9",
     title: "Apartamento Sabaneta Aves María",
     city: "Medellín",
     neighborhood: "Sabaneta",
@@ -173,7 +173,7 @@ export const mockProperties: Property[] = [
     createdAt: "2025-12-20",
   },
   {
-    id: 10,
+    id: "10",
     title: "Apartamento Premium El Poblado",
     city: "Medellín",
     neighborhood: "El Poblado",
