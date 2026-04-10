@@ -12,12 +12,20 @@ export async function POST(req: Request) {
     const { name, email, phone, city, projectType, isVIS, terms } = body;
 
     //Save on DB
-    const { error } = await supabase
-      .from("leads")
-      .insert([{ name, email, phone, city, projectType, isVIS, terms }]);
+    const { error } = await supabase.from("leads").insert([
+      {
+        name,
+        email,
+        phone,
+        city,
+        project_type: projectType,
+        is_VIS: isVIS,
+        terms,
+      },
+    ]);
 
     if (error) {
-      console.error(error);
+      console.error("Supabase error:", error);
       return new Response(JSON.stringify({ error: "Error guardando lead" }), {
         status: 500,
       });
@@ -26,7 +34,11 @@ export async function POST(req: Request) {
     //Send Email
     await resend.emails.send({
       from: "onboarding@resend.dev",
-      to: "alejoguerrero5@gmail.com",
+      to: [
+        "alejoguerrero5@gmail.com",
+        "dpalaciotamayo@gmail.com",
+        "cedeloapp@gmail.com",
+      ],
       subject: "Nuevo lead 🚀",
       html: `
         <div style="margin:0;padding:0;background-color:#f4f6f8;font-family:Arial,Helvetica,sans-serif;">
@@ -110,6 +122,7 @@ export async function POST(req: Request) {
 
     return new Response(JSON.stringify({ ok: true }), { status: 200 });
   } catch (error) {
+    console.error("API /api/contact error:", error);
     return new Response(JSON.stringify({ error: "Error en la API" }), {
       status: 500,
     });

@@ -1,17 +1,14 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { mockProperties } from "@/data/mockProperties";
 import type { Property } from "@/types/property";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { CREATED_PROJECTS_KEY, OVERRIDES_KEY } from "@/lib/adminStorage";
 
-type PropertyOverrides = Record<number, Partial<Property>>;
 type PropertyStatus = Property["status"];
 type PropertyType = Property["type"];
 
@@ -21,14 +18,11 @@ type ProjectFormValues = {
   neighborhood: string;
   currentPrice: number;
   originalPrice: number;
-  roi: number;
-  discount: number;
   area: number;
   bedrooms: number;
   bathrooms: number;
   status: PropertyStatus;
   type: PropertyType;
-  completionPercent: number;
 };
 
 export default function EditProjectPage() {
@@ -36,10 +30,9 @@ export default function EditProjectPage() {
   const params = useParams<{ id: string }>();
   const paramId = params.id;
   const isCreateMode = paramId === "nuevo";
-  const numericId = Number(paramId);
 
-  const [createdProjects, setCreatedProjects] = useState<Property[]>([]);
-  const [hydrated, setHydrated] = useState(false);
+  const [loading, setLoading] = useState(!isCreateMode);
+  const [property, setProperty] = useState<Property | null>(null);
 
   const form = useForm<ProjectFormValues>({
     defaultValues: {
@@ -48,70 +41,45 @@ export default function EditProjectPage() {
       neighborhood: "",
       currentPrice: 0,
       originalPrice: 0,
-      roi: 0,
-      discount: 0,
       area: 70,
       bedrooms: 2,
       bathrooms: 2,
       status: "en-planos",
       type: "apartamento",
-      completionPercent: 0,
     },
   });
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(CREATED_PROJECTS_KEY);
-      const list: unknown = raw ? JSON.parse(raw) : [];
-      if (Array.isArray(list)) setCreatedProjects(list as Property[]);
-    } catch {
-      // ignore
-    }
-    setHydrated(true);
-  }, []);
-
-  const base = useMemo(() => {
-    if (isCreateMode) return null;
-    const fromMock = mockProperties.find((p) => p.id === numericId);
-    if (fromMock) return fromMock;
-    return createdProjects.find((p) => p.id === numericId) ?? null;
-  }, [createdProjects, isCreateMode, numericId]);
-
-  useEffect(() => {
     if (isCreateMode) return;
-    if (!base) return;
 
-    const isCreated = createdProjects.some((p) => p.id === base.id);
-    let override: Partial<Property> | null = null;
-    if (!isCreated) {
-      try {
-        const raw = localStorage.getItem(OVERRIDES_KEY);
-        const ov = raw ? (JSON.parse(raw) as PropertyOverrides) : {};
-        override = ov?.[base.id] ?? null;
-      } catch {
-        // ignore
+    const loadProperty = async () => {
+      const res = await fetch(`/api/properties/${paramId}`);
+      if (!res.ok) {
+        toast.error("No se pudo cargar el proyecto");
+        setLoading(false);
+        return;
       }
-    }
+      const data = await res.json();
+      setProperty(data);
+      form.reset({
+        title: data.title || "",
+        city: data.city || "",
+        neighborhood: data.neighborhood || "",
+        currentPrice: data.current_price || 0,
+        originalPrice: data.original_price || 0,
+        area: data.area || 70,
+        bedrooms: data.bedrooms || 2,
+        bathrooms: data.bathrooms || 2,
+        status: data.status || "en-planos",
+        type: data.type || "apartamento",
+      });
+      setLoading(false);
+    };
 
-    const merged = { ...base, ...(override ?? {}) };
-    form.reset({
-      title: merged.title,
-      city: merged.city,
-      neighborhood: merged.neighborhood,
-      currentPrice: merged.currentPrice,
-      originalPrice: merged.originalPrice,
-      roi: merged.roi,
-      discount: merged.discount,
-      area: merged.area,
-      bedrooms: merged.bedrooms,
-      bathrooms: merged.bathrooms,
-      status: merged.status,
-      type: merged.type,
-      completionPercent: merged.completionPercent,
-    });
-  }, [base, createdProjects, form, isCreateMode]);
+    loadProperty();
+  }, [isCreateMode, paramId, form]);
 
-  if (!hydrated) {
+  if (loading) {
     return (
       <div className="rounded-2xl border border-border/50 bg-card p-6 shadow-card">
         <p className="text-sm text-muted-foreground">Cargando proyecto...</p>
@@ -119,7 +87,7 @@ export default function EditProjectPage() {
     );
   }
 
-  if (!isCreateMode && (!base || !Number.isFinite(numericId))) {
+  if (!isCreateMode && !property) {
     return (
       <div className="rounded-2xl border border-border/50 bg-card p-6 shadow-card">
         <p className="text-sm text-muted-foreground">Proyecto no encontrado.</p>
@@ -127,48 +95,47 @@ export default function EditProjectPage() {
     );
   }
 
-  const save = (values: ProjectFormValues) => {
+  const save = async (values: ProjectFormValues) => {
+    const payload = {
+      title: values.title,
+      city: values.city,
+      neighborhood: values.neighborhood,
+      currentPrice: values.currentPrice,
+      originalPrice: values.originalPrice,
+      area: values.area,
+      bedrooms: values.bedrooms,
+      bathrooms: values.bathrooms,
+      status: values.status,
+      type: values.type,
+      isVIS: false, // Asumiendo por defecto
+    };
+
     try {
+      let res: Response;
       if (isCreateMode) {
-        const allExisting = [...mockProperties, ...createdProjects];
-        const nextId = Math.max(...allExisting.map((p) => p.id), 0) + 1;
-        const createdAt = new Date().toISOString().slice(0, 10);
-        const newProject: Property = {
-          id: nextId,
-          image: "/placeholder.svg",
-          isVIS: false,
-          createdAt,
-          ...values,
-        };
-        const updated = [...createdProjects, newProject];
-        localStorage.setItem(CREATED_PROJECTS_KEY, JSON.stringify(updated));
-        toast.success("Proyecto creado");
-      } else if (base) {
-        const isCreated = createdProjects.some((p) => p.id === base.id);
-        if (isCreated) {
-          const updated = createdProjects.map((p) =>
-            p.id === base.id
-              ? {
-                  ...p,
-                  ...values,
-                }
-              : p,
-          );
-          localStorage.setItem(CREATED_PROJECTS_KEY, JSON.stringify(updated));
-        } else {
-          const raw = localStorage.getItem(OVERRIDES_KEY);
-          const current = raw ? (JSON.parse(raw) as PropertyOverrides) : {};
-          const next: PropertyOverrides = {
-            ...(current ?? {}),
-            [base.id]: { ...values },
-          };
-          localStorage.setItem(OVERRIDES_KEY, JSON.stringify(next));
-        }
-        toast.success("Cambios guardados");
+        res = await fetch("/api/properties", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+      } else {
+        res = await fetch(`/api/properties/${paramId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
       }
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Error al guardar");
+      }
+
+      toast.success(isCreateMode ? "Proyecto creado" : "Cambios guardados");
       router.push("/admin");
       router.refresh();
-    } catch {
+    } catch (error) {
+      console.error(error);
       toast.error("No se pudieron guardar los cambios");
     }
   };
@@ -181,11 +148,11 @@ export default function EditProjectPage() {
             {isCreateMode ? "Crear proyecto" : "Editar proyecto"}
           </h2>
           <p className="text-sm text-muted-foreground">
-            Cambios guardados localmente (por ahora).
+            Los cambios se guardan en la base de datos.
           </p>
         </div>
         <Badge variant="outline" className="border-primary text-primary">
-          {isCreateMode ? "Nuevo" : `ID ${base?.id}`}
+          {isCreateMode ? "Nuevo" : `ID ${property?.id}`}
         </Badge>
       </div>
 
@@ -216,28 +183,20 @@ export default function EditProjectPage() {
             <label className="text-sm font-medium">Precio actual (M)</label>
             <Input
               type="number"
-              {...form.register("currentPrice", { valueAsNumber: true, min: 0 })}
+              {...form.register("currentPrice", {
+                valueAsNumber: true,
+                min: 0,
+              })}
             />
           </div>
           <div className="space-y-2">
             <label className="text-sm font-medium">Precio original (M)</label>
             <Input
               type="number"
-              {...form.register("originalPrice", { valueAsNumber: true, min: 0 })}
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium">ROI (%)</label>
-            <Input
-              type="number"
-              {...form.register("roi", { valueAsNumber: true, min: 0 })}
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Descuento (%)</label>
-            <Input
-              type="number"
-              {...form.register("discount", { valueAsNumber: true, min: 0 })}
+              {...form.register("originalPrice", {
+                valueAsNumber: true,
+                min: 0,
+              })}
             />
           </div>
           <div className="space-y-2">
@@ -261,17 +220,6 @@ export default function EditProjectPage() {
               {...form.register("bathrooms", { valueAsNumber: true, min: 0 })}
             />
           </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium">% Construcción</label>
-            <Input
-              type="number"
-              {...form.register("completionPercent", {
-                valueAsNumber: true,
-                min: 0,
-                max: 100,
-              })}
-            />
-          </div>
         </div>
 
         <div className="flex flex-col gap-2 border-t border-border/50 p-6 sm:flex-row sm:justify-end">
@@ -286,4 +234,3 @@ export default function EditProjectPage() {
     </div>
   );
 }
-
