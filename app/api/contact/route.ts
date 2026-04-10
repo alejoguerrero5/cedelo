@@ -34,11 +34,8 @@ export async function POST(req: Request) {
     //Send Email
     await resend.emails.send({
       from: "onboarding@resend.dev",
-      to: [
-        "alejoguerrero5@gmail.com",
-        "dpalaciotamayo@gmail.com",
-        "cedeloapp@gmail.com",
-      ],
+      to: "cedeloapp@gmail.com",
+      cc: "alejoguerrero5@gmail.com, dpalaciotamayo@gmail.com",
       subject: "Nuevo lead 🚀",
       html: `
         <div style="margin:0;padding:0;background-color:#f4f6f8;font-family:Arial,Helvetica,sans-serif;">
