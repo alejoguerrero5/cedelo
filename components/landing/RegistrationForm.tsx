@@ -83,7 +83,6 @@ const RegistrationForm = () => {
   };
 
   if (isSubmitted && submittedData) {
-    const isVIS = submittedData.isVIS === "vis";
     return (
       <section id="registro" className="section-padding bg-secondary">
         <div className="container-section">
@@ -93,23 +92,17 @@ const RegistrationForm = () => {
             className="max-w-lg mx-auto text-center bg-card rounded-3xl p-12 shadow-card"
           >
             <div
-              className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 ${
-                isVIS ? "bg-destructive/10" : "bg-success/10"
-              }`}
+              className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 bg-success/10`}
             >
-              <CheckCircle2
-                className={`w-10 h-10 ${
-                  isVIS ? "text-destructive" : "text-success"
-                }`}
-              />
+              <CheckCircle2 className={`w-10 h-10 text-success`} />
             </div>
             <h3 className="text-2xl font-bold text-foreground mb-3">
-              {isVIS ? "Registro no permitido" : "¡Gracias por registrarte!"}
+              {"¡Gracias por registrarte!"}
             </h3>
             <p className="text-muted-foreground mb-6">
-              {isVIS
-                ? "Lamentablemente, por el momento no es posible registrar propiedades de tipo VIS."
-                : "Hemos recibido tu información. Un asesor de CEDELO se comunicará contigo en las próximas 24 horas."}
+              {
+                "Hemos recibido tu información. Un asesor de CEDELO se comunicará contigo en las próximas 24 horas."
+              }
             </p>
             <Button
               onClick={() => {
