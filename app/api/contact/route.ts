@@ -37,8 +37,8 @@ export async function POST(req: Request) {
       to: "alejoguerrero5@gmail.com",
       subject: "Nuevo lead CEDELO 🚀",
       html: `
-        <div style="margin:0;padding:0;background-color:#f4f6f8;font-family:Arial,Helvetica,sans-serif;">
-          <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f6f8;padding:20px 0;">
+        <div style="margin:0;padding:0;background-color:#E0E1DD;font-family:Arial,Helvetica,sans-serif;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#E0E1DD;padding:20px 0;">
             <tr>
               <td align="center">
                 
@@ -46,7 +46,7 @@ export async function POST(req: Request) {
                   
                   <!-- HEADER -->
                   <tr>
-                    <td style="background:linear-gradient(135deg,#0f172a,#1e293b);color:#ffffff;padding:24px;text-align:center;">
+                    <td style="background:linear-gradient(135deg,#0D1B2A,#00F5D4);color:#FFFFFF;padding:24px;text-align:center;">
                       <h1 style="margin:0;font-size:22px;">Nuevo Lead 🚀</h1>
                       <p style="margin:8px 0 0;font-size:14px;opacity:0.85;">
                         Interesado en cesión de contrato
@@ -58,7 +58,7 @@ export async function POST(req: Request) {
                   <tr>
                     <td style="padding:24px;">
                       
-                      <p style="margin-top:0;font-size:15px;color:#374151;">
+                      <p style="margin-top:0;font-size:15px;color:#0D1B2A;">
                         Has recibido un nuevo cliente potencial en <b>CEDELO</b>:
                       </p>
 
@@ -75,9 +75,9 @@ export async function POST(req: Request) {
                           .map(
                             ([label, value]) => `
                           <tr>
-                            <td style="padding:10px 0;border-bottom:1px solid #e5e7eb;">
-                              <span style="display:block;font-size:12px;color:#6b7280;">${label}</span>
-                              <span style="font-size:15px;color:#111827;font-weight:600;">
+                            <td style="padding:10px 0;border-bottom:1px solid #E0E1DD;">
+                              <span style="display:block;font-size:12px;color:#415066;">${label}</span>
+                              <span style="font-size:15px;color:#0D1B2A;font-weight:600;">
                                 ${value || "—"}
                               </span>
                             </td>
@@ -91,7 +91,7 @@ export async function POST(req: Request) {
                       <!-- CTA -->
                       <div style="text-align:center;margin-top:24px;">
                         <a href="mailto:${email}" 
-                          style="display:inline-block;padding:12px 20px;background:#2563eb;color:#ffffff;text-decoration:none;border-radius:8px;font-size:14px;font-weight:bold;">
+                          style="display:inline-block;padding:12px 20px;background:#00F5D4;color:#0D1B2A;text-decoration:none;border-radius:8px;font-size:14px;font-weight:bold;">
                           Contactar cliente
                         </a>
                       </div>
@@ -101,7 +101,7 @@ export async function POST(req: Request) {
 
                   <!-- FOOTER -->
                   <tr>
-                    <td style="padding:16px;text-align:center;font-size:12px;color:#9ca3af;">
+                    <td style="padding:16px;text-align:center;font-size:12px;color:#415066;">
                       CEDELO · Sistema de captación de leads<br/>
                       Este correo fue generado automáticamente
                     </td>

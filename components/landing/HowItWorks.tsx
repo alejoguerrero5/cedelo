@@ -63,7 +63,7 @@ const HowItWorks = () => {
                 className="bg-white rounded-2xl p-8 shadow-card hover:shadow-card-hover transition-all duration-300 h-full group"
               >
                 {/* Step Number */}
-                <div className="absolute -top-4 left-8 bg-[#22C55E] text-primary-foreground text-sm font-bold px-4 py-1.5 rounded-full">
+                <div className="absolute -top-4 left-8 bg-success text-success-foreground text-sm font-bold px-4 py-1.5 rounded-full">
                   Paso {step.number}
                 </div>
 

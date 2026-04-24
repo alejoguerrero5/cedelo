@@ -1,9 +1,14 @@
 "use client";
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, Star, Quote } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Star,
+  Quote,
+  UserRound,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
 
 const testimonials = [
   {
@@ -13,8 +18,6 @@ const testimonials = [
     quote:
       "Gracias a CEDELO pude ceder mi apartamento sobre planos en menos de 2 meses. Recuperé mi inversión inicial más un 18% de ganancia. El equipo fue muy profesional y me acompañó en todo el proceso.",
     rating: 5,
-    image:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face",
   },
   {
     id: 2,
@@ -23,8 +26,6 @@ const testimonials = [
     quote:
       "Tenía un proyecto en Poblado que no podía seguir pagando. CEDELO me ayudó a encontrar un comprador rápidamente. El proceso fue transparente y la asesoría legal me dio mucha tranquilidad.",
     rating: 5,
-    image:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
   },
   {
     id: 3,
@@ -33,8 +34,6 @@ const testimonials = [
     quote:
       "Excelente servicio. Mi esposo y yo compramos un apto en la zona norte pero nuestros planes cambiaron. CEDELO nos conectó con un inversionista y cerramos el negocio en tiempo récord. 100% recomendado.",
     rating: 5,
-    image:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
   },
 ];
 
@@ -91,16 +90,12 @@ const Testimonials = () => {
               </div>
 
               <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
-                {/* Profile Image */}
+                {/* Profile Icon */}
                 <div className="shrink-0">
-                  <div className="w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden ring-4 ring-primary/20 ring-offset-4 ring-offset-card">
-                    <Image
-                      src={testimonials[currentIndex].image}
-                      alt={testimonials[currentIndex].name}
-                      className="w-full h-full object-cover"
-                      width={112}
-                      height={112}
-                    />
+                  <div className="w-24 h-24 md:w-28 md:h-28 rounded-full gradient-icon p-1 shadow-blue ring-4 ring-success/35 ring-offset-4 ring-offset-card">
+                    <div className="w-full h-full rounded-full bg-card flex items-center justify-center">
+                      <UserRound className="w-10 h-10 md:w-12 md:h-12 text-primary" />
+                    </div>
                   </div>
                 </div>
 

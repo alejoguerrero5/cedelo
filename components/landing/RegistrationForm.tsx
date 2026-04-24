@@ -411,11 +411,11 @@ const RegistrationForm = () => {
                 type="submit"
                 size="lg"
                 disabled={isSubmitting}
-                className="w-full h-14 text-base font-semibold gradient-cta shadow-blue hover:opacity-90 transition-opacity"
+                className="w-full h-14 text-base font-semibold"
               >
                 {isSubmitting ? (
                   <div className="flex items-center gap-2">
-                    <div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                    <div className="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
                     Enviando...
                   </div>
                 ) : (

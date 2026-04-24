@@ -68,8 +68,8 @@ const Benefits = () => {
                 <div className="flex gap-5">
                   {/* Icon */}
                   <div className="shrink-0">
-                    <div className="w-14 h-14 rounded-xl bg-linear-to-r from-[#22C55E] to-[#16A34A] flex items-center justify-center shadow-blue group-hover:scale-110 transition-transform">
-                      <benefit.icon className="w-7 h-7 text-primary-foreground" />
+                    <div className="w-14 h-14 rounded-xl gradient-icon flex items-center justify-center shadow-blue group-hover:scale-110 transition-transform">
+                      <benefit.icon className="w-7 h-7 text-primary" />
                     </div>
                   </div>
 
