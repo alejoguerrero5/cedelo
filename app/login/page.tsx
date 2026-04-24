@@ -61,8 +61,8 @@ export default function AdminLoginPage() {
         <div className="rounded-2xl border border-border/50 bg-card shadow-card hover:shadow-card-hover transition-all duration-300 p-8 space-y-6">
           {/* Header */}
           <div className="text-center space-y-3">
-            <div className="mx-auto w-14 h-14 rounded-xl bg-linear-to-r from-[#22C55E] to-[#16A34A] flex items-center justify-center shadow-blue">
-              <ShieldCheck className="w-6 h-6 text-primary-foreground" />
+            <div className="mx-auto w-14 h-14 rounded-xl gradient-cta flex items-center justify-center shadow-blue">
+              <ShieldCheck className="w-6 h-6 text-primary" />
             </div>
 
             <div>

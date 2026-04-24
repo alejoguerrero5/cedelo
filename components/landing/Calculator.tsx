@@ -69,12 +69,12 @@ const Calculator = () => {
       {
         name: "Inversión",
         valor: inversion / 1000000,
-        fill: "hsl(var(--primary))",
+        fill: "hsl(var(--accent))",
       },
       {
         name: "Ganancia con Nosotros",
         valor: Math.max(gananciaConNosotros, 0) / 1000000,
-        fill: "#22C55E",
+        fill: "hsl(var(--success))",
       },
       {
         name: "Devolver Constructora",
@@ -303,13 +303,13 @@ const Calculator = () => {
 
                 <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-3">
                   {/* Ganancia con nosotros */}
-                  <div className="bg-green-500 rounded-xl p-4 text-center">
-                    <PiggyBank className="w-5 h-5 text-white mx-auto mb-2" />
-                    <p className="text-sm font-medium text-white mb-1">
+                  <div className="bg-accent rounded-xl p-4 text-center">
+                    <PiggyBank className="w-5 h-5 text-accent-foreground mx-auto mb-2" />
+                    <p className="text-sm font-medium text-accent-foreground mb-1">
                       Ganancia con nosotros
                     </p>
                     <div className="p-2 bg-white rounded-lg">
-                      <p className={`text font-bold text-green-500`}>
+                      <p className={`text font-bold text-accent`}>
                         {formatCurrency(results.gananciaConNosotros)}
                       </p>
                     </div>
@@ -349,16 +349,22 @@ const Calculator = () => {
                       >
                         <CartesianGrid
                           strokeDasharray="3 3"
-                          stroke="rgba(255,255,255,0.1)"
+                          stroke="rgba(0,245,212,0.16)"
                         />
                         <XAxis
                           dataKey="name"
-                          tick={{ fill: "rgba(255,255,255,0.7)", fontSize: 12 }}
-                          axisLine={{ stroke: "rgba(255,255,255,0.2)" }}
+                          tick={{
+                            fill: "rgba(255,255,255,0.82)",
+                            fontSize: 12,
+                          }}
+                          axisLine={{ stroke: "rgba(0,245,212,0.28)" }}
                         />
                         <YAxis
-                          tick={{ fill: "rgba(255,255,255,0.7)", fontSize: 12 }}
-                          axisLine={{ stroke: "rgba(255,255,255,0.2)" }}
+                          tick={{
+                            fill: "rgba(255,255,255,0.82)",
+                            fontSize: 12,
+                          }}
+                          axisLine={{ stroke: "rgba(0,245,212,0.28)" }}
                           tickFormatter={formatMillions}
                         />
                         <Tooltip
@@ -372,7 +378,7 @@ const Calculator = () => {
                           }}
                           contentStyle={{
                             backgroundColor: "hsl(var(--card))",
-                            border: "1px solid hsl(var(--primary))",
+                            border: "1px solid hsl(var(--accent))",
                             borderRadius: "8px",
                             fontSize: "14px",
                             fontWeight: "500",
@@ -397,16 +403,22 @@ const Calculator = () => {
                       >
                         <CartesianGrid
                           strokeDasharray="3 3"
-                          stroke="rgba(255,255,255,0.1)"
+                          stroke="rgba(0,245,212,0.16)"
                         />
                         <XAxis
                           dataKey="mes"
-                          tick={{ fill: "rgba(255,255,255,0.7)", fontSize: 11 }}
-                          axisLine={{ stroke: "rgba(255,255,255,0.2)" }}
+                          tick={{
+                            fill: "rgba(255,255,255,0.82)",
+                            fontSize: 11,
+                          }}
+                          axisLine={{ stroke: "rgba(0,245,212,0.28)" }}
                         />
                         <YAxis
-                          tick={{ fill: "rgba(255,255,255,0.7)", fontSize: 12 }}
-                          axisLine={{ stroke: "rgba(255,255,255,0.2)" }}
+                          tick={{
+                            fill: "rgba(255,255,255,0.82)",
+                            fontSize: 12,
+                          }}
+                          axisLine={{ stroke: "rgba(0,245,212,0.28)" }}
                           tickFormatter={formatMillions}
                         />
                         <Tooltip
@@ -420,7 +432,7 @@ const Calculator = () => {
                           }}
                           contentStyle={{
                             backgroundColor: "hsl(var(--card))",
-                            border: "1px solid hsl(var(--primary))",
+                            border: "1px solid hsl(var(--accent))",
                             borderRadius: "8px",
                             fontSize: "14px",
                             fontWeight: "500",
@@ -429,16 +441,17 @@ const Calculator = () => {
                         <Line
                           type="monotone"
                           dataKey="valor"
-                          stroke="hsl(var(--primary-foreground))"
+                          stroke="hsl(var(--accent))"
                           strokeWidth={3}
                           dot={{
-                            fill: "hsl(var(--primary-foreground))",
+                            fill: "hsl(var(--success))",
                             strokeWidth: 2,
+                            stroke: "hsl(var(--accent))",
                             r: 4,
                           }}
                           activeDot={{
                             r: 6,
-                            fill: "hsl(var(--primary-foreground))",
+                            fill: "hsl(var(--accent))",
                           }}
                         />
                       </LineChart>
