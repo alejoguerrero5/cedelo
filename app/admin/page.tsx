@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/table";
 
 function formatPrice(price: number) {
-  return `COP $${price}M`;
+  return `COP $${price}`;
 }
 
 function statusLabel(status: Property["status"]) {

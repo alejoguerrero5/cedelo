@@ -194,7 +194,7 @@ const Properties = () => {
 
             <div className="flex items-center gap-3">
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-44 h-9 bg-secondary border-border text-sm">
+                <SelectTrigger className="w-44 h-9 bg-gray-50 shadow text-sm text-foreground">
                   <SelectValue placeholder="Ordenar por" />
                 </SelectTrigger>
                 <SelectContent>

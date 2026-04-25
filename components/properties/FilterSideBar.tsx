@@ -54,7 +54,7 @@ const FilterSidebar = ({
       <div className="space-y-2">
         <Label className="text-sm font-medium">Ubicación</Label>
         <Select value={filters.city} onValueChange={(v) => update({ city: v })}>
-          <SelectTrigger className="h-10 bg-secondary border-border">
+          <SelectTrigger className="h-10 bg-gray-50 shadow text-foreground">
             <SelectValue placeholder="Todas las ciudades" />
           </SelectTrigger>
           <SelectContent>
@@ -117,7 +117,7 @@ const FilterSidebar = ({
           value={filters.status}
           onValueChange={(v) => update({ status: v })}
         >
-          <SelectTrigger className="h-10 bg-secondary border-border">
+          <SelectTrigger className="h-10 bg-gray-50 shadow text-foreground">
             <SelectValue placeholder="Todos los estados" />
           </SelectTrigger>
           <SelectContent>
@@ -179,7 +179,7 @@ const FilterSidebar = ({
           value={filters.bedrooms}
           onValueChange={(v) => update({ bedrooms: v })}
         >
-          <SelectTrigger className="h-10 bg-secondary border-border">
+          <SelectTrigger className="h-10 bg-gray-50 shadow text-foreground">
             <SelectValue placeholder="Cualquiera" />
           </SelectTrigger>
           <SelectContent>
@@ -199,7 +199,7 @@ const FilterSidebar = ({
           value={filters.bathrooms}
           onValueChange={(v) => update({ bathrooms: v })}
         >
-          <SelectTrigger className="h-10 bg-secondary border-border">
+          <SelectTrigger className="h-10 bg-gray-50 shadow text-foreground">
             <SelectValue placeholder="Cualquiera" />
           </SelectTrigger>
           <SelectContent>
