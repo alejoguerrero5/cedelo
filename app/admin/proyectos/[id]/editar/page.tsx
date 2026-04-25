@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Image from "next/image";
 import { Controller, useForm } from "react-hook-form";
 import type { Property } from "@/types/property";
 import { Button } from "@/components/ui/button";
@@ -406,19 +407,25 @@ export default function EditProjectPage() {
             {uploading && (
               <p className="text-xs text-muted-foreground">Subiendo...</p>
             )}
-            <div className="space-y-2">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
               {form.watch("images").map((imageUrl) => (
                 <div
                   key={imageUrl}
-                  className="flex items-center justify-between gap-2 rounded-md border border-border/50 px-3 py-2"
+                  className="group relative overflow-hidden rounded-lg border border-border/50 bg-muted"
                 >
-                  <span className="truncate text-xs text-muted-foreground">
-                    {imageUrl}
-                  </span>
+                  <div className="relative aspect-4/3 w-full">
+                    <Image
+                      src={imageUrl}
+                      alt="Imagen del proyecto"
+                      fill
+                      className="object-cover transition-transform duration-200 group-hover:scale-105"
+                    />
+                  </div>
                   <Button
                     type="button"
-                    variant="outline"
+                    variant="destructive"
                     size="sm"
+                    className="absolute right-2 top-2 h-7 px-2"
                     onClick={() => removeImage(imageUrl)}
                   >
                     Quitar

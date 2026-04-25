@@ -1,9 +1,17 @@
 import { useState } from "react";
 import { Property } from "@/types/property";
-import { Heart, MapPin, BedDouble, Bath, Maximize2 } from "lucide-react";
+import {
+  MapPin,
+  BedDouble,
+  Bath,
+  Maximize2,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import InterestModal from "./InterestModal";
 import Image from "next/image";
 
@@ -43,8 +51,13 @@ const getCesionRoiPercent = (currentPrice: number, originalPrice: number) => {
 };
 
 const PropertyCard = ({ property, viewMode }: PropertyCardProps) => {
-  const [isFavorite, setIsFavorite] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [galleryOpen, setGalleryOpen] = useState(false);
+  const [galleryIndex, setGalleryIndex] = useState(0);
+  const galleryImages =
+    property.images && property.images.length > 0
+      ? property.images
+      : [property.image];
   const salePrice = getSalePrice(property.currentPrice, property.originalPrice);
   const discountPercent = getDiscountPercent(
     property.currentPrice,
@@ -59,6 +72,23 @@ const PropertyCard = ({ property, viewMode }: PropertyCardProps) => {
     property.originalPrice,
   );
 
+  const openGallery = (index = 0) => {
+    setGalleryIndex(index);
+    setGalleryOpen(true);
+  };
+
+  const prevImage = () => {
+    setGalleryIndex((prev) =>
+      prev === 0 ? galleryImages.length - 1 : prev - 1,
+    );
+  };
+
+  const nextImage = () => {
+    setGalleryIndex((prev) =>
+      prev === galleryImages.length - 1 ? 0 : prev + 1,
+    );
+  };
+
   if (viewMode === "list") {
     return (
       <div className="bg-card rounded-2xl border border-border/50 shadow-card hover:shadow-card-hover transition-all duration-300 flex overflow-hidden group">
@@ -67,22 +97,79 @@ const PropertyCard = ({ property, viewMode }: PropertyCardProps) => {
           open={modalOpen}
           onOpenChange={setModalOpen}
         />
+        <Dialog open={galleryOpen} onOpenChange={setGalleryOpen}>
+          <DialogContent className="max-w-4xl bg-white p-6 sm:p-8">
+            <DialogTitle className="sr-only">Galeria de imagenes</DialogTitle>
+            <div className="space-y-3">
+              <div className="relative px-10 sm:px-12">
+                <div className="relative aspect-16/10 w-full overflow-hidden rounded-lg bg-muted">
+                  <Image
+                    src={galleryImages[galleryIndex]}
+                    alt={`${property.title} ${galleryIndex + 1}`}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                {galleryImages.length > 1 && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={prevImage}
+                      className="absolute left-0 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white"
+                      aria-label="Imagen anterior"
+                    >
+                      <ChevronLeft className="h-5 w-5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={nextImage}
+                      className="absolute right-0 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white"
+                      aria-label="Imagen siguiente"
+                    >
+                      <ChevronRight className="h-5 w-5" />
+                    </button>
+                  </>
+                )}
+              </div>
+              <div className="flex flex-wrap justify-center gap-2">
+                {galleryImages.map((img, index) => (
+                  <button
+                    key={`${img}-${index}`}
+                    type="button"
+                    className={`relative h-16 w-16 overflow-hidden rounded-md border-2 transition ${
+                      galleryIndex === index
+                        ? "border-accent ring-2 ring-accent/35"
+                        : "border-border/50"
+                    }`}
+                    onClick={() => setGalleryIndex(index)}
+                    aria-label={`Ver imagen ${index + 1}`}
+                  >
+                    <Image
+                      src={img}
+                      alt={`${property.title} miniatura ${index + 1}`}
+                      fill
+                      className="object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
         {/* Image */}
         <div className="relative w-64 min-h-50 shrink-0 bg-muted overflow-hidden">
+          <button
+            type="button"
+            onClick={() => openGallery(0)}
+            className="absolute inset-0 z-10"
+            aria-label="Abrir galeria de imagenes"
+          />
           <Image
-            src={property.image}
+            src={galleryImages[0]}
             alt={property.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             fill
           />
-          <button
-            onClick={() => setIsFavorite(!isFavorite)}
-            className="absolute top-3 left-3 w-8 h-8 rounded-full bg-card/80 backdrop-blur-sm flex items-center justify-center hover:bg-card transition-colors"
-          >
-            <Heart
-              className={`w-4 h-4 ${isFavorite ? "fill-destructive text-destructive" : "text-muted-foreground"}`}
-            />
-          </button>
         </div>
         {/* Content */}
         <div className="flex-1 p-5 flex flex-col justify-between">
@@ -146,23 +233,80 @@ const PropertyCard = ({ property, viewMode }: PropertyCardProps) => {
         open={modalOpen}
         onOpenChange={setModalOpen}
       />
+      <Dialog open={galleryOpen} onOpenChange={setGalleryOpen}>
+        <DialogContent className="max-w-4xl bg-white p-6 sm:p-8">
+          <DialogTitle className="sr-only">Galeria de imagenes</DialogTitle>
+          <div className="space-y-3">
+            <div className="relative px-10 sm:px-12">
+              <div className="relative aspect-16/10 w-full overflow-hidden rounded-lg bg-muted">
+                <Image
+                  src={galleryImages[galleryIndex]}
+                  alt={`${property.title} ${galleryIndex + 1}`}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              {galleryImages.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={prevImage}
+                    className="absolute left-0 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white"
+                    aria-label="Imagen anterior"
+                  >
+                    <ChevronLeft className="h-5 w-5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={nextImage}
+                    className="absolute right-0 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white"
+                    aria-label="Imagen siguiente"
+                  >
+                    <ChevronRight className="h-5 w-5" />
+                  </button>
+                </>
+              )}
+            </div>
+            <div className="flex flex-wrap justify-center gap-2">
+              {galleryImages.map((img, index) => (
+                <button
+                  key={`${img}-${index}`}
+                  type="button"
+                  className={`relative h-16 w-16 overflow-hidden rounded-md border-2 transition ${
+                    galleryIndex === index
+                      ? "border-accent ring-2 ring-accent/35"
+                      : "border-border/50"
+                  }`}
+                  onClick={() => setGalleryIndex(index)}
+                  aria-label={`Ver imagen ${index + 1}`}
+                >
+                  <Image
+                    src={img}
+                    alt={`${property.title} miniatura ${index + 1}`}
+                    fill
+                    className="object-cover"
+                  />
+                </button>
+              ))}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Image */}
       <div className="relative h-48 bg-muted overflow-hidden">
+        <button
+          type="button"
+          onClick={() => openGallery(0)}
+          className="absolute inset-0 z-10"
+          aria-label="Abrir galeria de imagenes"
+        />
         <Image
-          src={property.image}
+          src={galleryImages[0]}
           alt={property.title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           fill
         />
-        <button
-          onClick={() => setIsFavorite(!isFavorite)}
-          className="absolute top-3 left-3 w-8 h-8 rounded-full bg-card/80 backdrop-blur-sm flex items-center justify-center hover:bg-card transition-colors"
-        >
-          <Heart
-            className={`w-4 h-4 ${isFavorite ? "fill-destructive text-destructive" : "text-muted-foreground"}`}
-          />
-        </button>
       </div>
 
       {/* Content */}
