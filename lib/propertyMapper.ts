@@ -21,11 +21,12 @@ type DbProperty = {
 export function mapDbPropertyToProperty(row: DbProperty): Property {
   const originalPrice = Number(row.original_price ?? 0);
   const currentPrice = Number(row.current_price ?? 0);
+  const salePrice = currentPrice - (currentPrice - originalPrice) / 2;
   const discount =
-    originalPrice > 0
+    currentPrice > 0
       ? Math.max(
           0,
-          Math.round(((originalPrice - currentPrice) / originalPrice) * 100),
+          Math.round(((currentPrice - salePrice) / currentPrice) * 100),
         )
       : 0;
 

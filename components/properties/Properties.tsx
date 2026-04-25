@@ -31,6 +31,22 @@ import PropertyCard from "@/components/properties/PropertyCard";
 
 const ITEMS_PER_PAGE = 6;
 
+const getSalePrice = (currentPrice: number, originalPrice: number) =>
+  currentPrice - (currentPrice - originalPrice) / 2;
+
+const getDiscountPercent = (currentPrice: number, originalPrice: number) => {
+  if (currentPrice <= 0) return 0;
+  const salePrice = getSalePrice(currentPrice, originalPrice);
+  return ((currentPrice - salePrice) / currentPrice) * 100;
+};
+
+const getMainRoiPercent = (currentPrice: number, originalPrice: number) => {
+  const salePrice = getSalePrice(currentPrice, originalPrice);
+  if (salePrice <= 0) return 0;
+  const potentialProfit = currentPrice - salePrice;
+  return (potentialProfit / salePrice) * 100;
+};
+
 const Properties = () => {
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
@@ -99,9 +115,16 @@ const Properties = () => {
     if (filters.status && filters.status !== "all")
       result = result.filter((p) => p.status === filters.status);
     if (filters.discountMin > 0)
-      result = result.filter((p) => p.discount >= filters.discountMin);
+      result = result.filter(
+        (p) =>
+          getDiscountPercent(p.currentPrice, p.originalPrice) >=
+          filters.discountMin,
+      );
     if (filters.roiMin > 0)
-      result = result.filter((p) => p.roi >= filters.roiMin);
+      result = result.filter(
+        (p) =>
+          getMainRoiPercent(p.currentPrice, p.originalPrice) >= filters.roiMin,
+      );
     if (
       filters.areaMin !== defaultFilters.areaMin ||
       filters.areaMax !== defaultFilters.areaMax
@@ -128,10 +151,18 @@ const Properties = () => {
         result.sort((a, b) => a.currentPrice - b.currentPrice);
         break;
       case "discount":
-        result.sort((a, b) => b.discount - a.discount);
+        result.sort(
+          (a, b) =>
+            getDiscountPercent(b.currentPrice, b.originalPrice) -
+            getDiscountPercent(a.currentPrice, a.originalPrice),
+        );
         break;
       case "roi":
-        result.sort((a, b) => b.roi - a.roi);
+        result.sort(
+          (a, b) =>
+            getMainRoiPercent(b.currentPrice, b.originalPrice) -
+            getMainRoiPercent(a.currentPrice, a.originalPrice),
+        );
         break;
       default:
         result.sort(

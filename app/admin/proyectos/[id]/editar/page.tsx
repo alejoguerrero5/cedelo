@@ -31,8 +31,8 @@ type ProjectFormValues = {
   projectName: string;
   city: string;
   neighborhood: string;
-  currentPrice: number;
-  originalPrice: number;
+  currentPrice: string;
+  originalPrice: string;
   area: number;
   bedrooms: number;
   bathrooms: number;
@@ -60,8 +60,8 @@ export default function EditProjectPage() {
       projectName: "",
       city: "",
       neighborhood: "",
-      currentPrice: 0,
-      originalPrice: 0,
+      currentPrice: "",
+      originalPrice: "",
       area: 70,
       bedrooms: 2,
       bathrooms: 2,
@@ -107,8 +107,8 @@ export default function EditProjectPage() {
         projectName: data.projectName || data.title || "",
         city: data.city || "",
         neighborhood: data.neighborhood || "",
-        currentPrice: data.currentPrice || data.current_price || 0,
-        originalPrice: data.originalPrice || data.original_price || 0,
+        currentPrice: String(data.currentPrice || data.current_price || ""),
+        originalPrice: String(data.originalPrice || data.original_price || ""),
         area: data.area || 70,
         bedrooms: data.bedrooms || 2,
         bathrooms: data.bathrooms || 2,
@@ -188,12 +188,17 @@ export default function EditProjectPage() {
   };
 
   const save = async (values: ProjectFormValues) => {
+    const toInteger = (value: string) => {
+      const normalized = value.replace(/[^\d]/g, "");
+      return normalized.length > 0 ? Number(normalized) : 0;
+    };
+
     const payload = {
       projectName: values.projectName,
       city: values.city,
       neighborhood: values.neighborhood,
-      currentPrice: values.currentPrice,
-      originalPrice: values.originalPrice,
+      currentPrice: toInteger(values.currentPrice),
+      originalPrice: toInteger(values.originalPrice),
       area: values.area,
       bedrooms: values.bedrooms,
       bathrooms: values.bathrooms,
@@ -309,22 +314,24 @@ export default function EditProjectPage() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">Precio actual (M)</label>
+            <label className="text-sm font-medium">Precio actual (COP)</label>
             <Input
-              type="number"
+              type="text"
+              inputMode="numeric"
               {...form.register("currentPrice", {
-                valueAsNumber: true,
-                min: 0,
+                required: true,
+                pattern: /^\d+$/,
               })}
             />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-medium">Precio inicial (M)</label>
+            <label className="text-sm font-medium">Precio inicial (COP)</label>
             <Input
-              type="number"
+              type="text"
+              inputMode="numeric"
               {...form.register("originalPrice", {
-                valueAsNumber: true,
-                min: 0,
+                required: true,
+                pattern: /^\d+$/,
               })}
             />
           </div>

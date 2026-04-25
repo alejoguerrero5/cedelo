@@ -30,6 +30,24 @@ function statusVariant(status: Property["status"]) {
   return status === "en-venta" ? ("default" as const) : ("secondary" as const);
 }
 
+function salePrice(currentPrice: number, originalPrice: number) {
+  return currentPrice - (currentPrice - originalPrice) / 2;
+}
+
+function mainRoiPercent(currentPrice: number, originalPrice: number) {
+  const sellingPrice = salePrice(currentPrice, originalPrice);
+  if (sellingPrice <= 0) return 0;
+  const potentialProfit = currentPrice - sellingPrice;
+  return (potentialProfit / sellingPrice) * 100;
+}
+
+function cesionRoiPercent(currentPrice: number, originalPrice: number) {
+  const potentialProfit = (currentPrice - originalPrice) / 2;
+  const cesionCost = originalPrice * 0.3 + potentialProfit;
+  if (cesionCost <= 0) return 0;
+  return (potentialProfit / cesionCost) * 100;
+}
+
 export default function AdminDashboardPage() {
   const [properties, setProperties] = useState<Property[]>([]);
 
@@ -167,23 +185,45 @@ export default function AdminDashboardPage() {
 
                   <TableCell>
                     <div className="font-semibold text-foreground">
-                      {formatPrice(p.currentPrice)}
+                      {formatPrice(salePrice(p.currentPrice, p.originalPrice))}
                     </div>
                     <div className="text-xs text-muted-foreground line-through">
-                      {formatPrice(p.originalPrice)}
+                      {formatPrice(p.currentPrice)}
                     </div>
                     <div className="text-xs font-semibold text-success">
-                      {p.discount}% OFF
+                      {(
+                        ((p.currentPrice -
+                          (p.currentPrice -
+                            (p.currentPrice - p.originalPrice) / 2)) /
+                          p.currentPrice) *
+                        100
+                      ).toFixed(1)}
+                      % OFF
                     </div>
                   </TableCell>
 
                   <TableCell>
-                    <Badge
-                      variant="outline"
-                      className="border-primary/25 bg-primary/5 text-primary"
-                    >
-                      {p.roi}%
-                    </Badge>
+                    <div>
+                      <Badge
+                        variant="outline"
+                        className="border-primary/25 bg-primary/5 text-primary"
+                      >
+                        ROI:{" "}
+                        {mainRoiPercent(
+                          p.currentPrice,
+                          p.originalPrice,
+                        ).toFixed(1)}
+                        %
+                      </Badge>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        ROI cesión:{" "}
+                        {cesionRoiPercent(
+                          p.currentPrice,
+                          p.originalPrice,
+                        ).toFixed(1)}
+                        %
+                      </p>
+                    </div>
                   </TableCell>
 
                   <TableCell>

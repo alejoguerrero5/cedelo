@@ -39,8 +39,8 @@ export interface Filters {
 
 export const defaultFilters: Filters = {
   city: "",
-  priceMin: 50,
-  priceMax: 800,
+  priceMin: 50_000_000,
+  priceMax: 800_000_000,
   types: [],
   status: "",
   completionMin: 0,

@@ -38,6 +38,9 @@ const cities = [
   "Ibagué",
 ];
 
+const getSalePrice = (currentPrice: number, originalPrice: number) =>
+  currentPrice - (currentPrice - originalPrice) / 2;
+
 const InterestModal = ({
   property,
   open,
@@ -81,7 +84,11 @@ const InterestModal = ({
         <DialogHeader>
           <DialogTitle>Me interesa esta propiedad</DialogTitle>
           <DialogDescription>
-            {property?.title} — COP ${property?.currentPrice}M
+            {property?.title} — COP $
+            {property
+              ? getSalePrice(property.currentPrice, property.originalPrice)
+              : 0}
+            M
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-2">

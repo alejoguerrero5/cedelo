@@ -26,6 +26,13 @@ const FilterSidebar = ({
   onFiltersChange,
   activeCount,
 }: FilterSidebarProps) => {
+  const formatCOP = (value: number) =>
+    new Intl.NumberFormat("es-CO", {
+      style: "currency",
+      currency: "COP",
+      maximumFractionDigits: 0,
+    }).format(value);
+
   const update = (partial: Partial<Filters>) =>
     onFiltersChange({ ...filters, ...partial });
 
@@ -70,21 +77,19 @@ const FilterSidebar = ({
 
       {/* Precio */}
       <div className="space-y-3">
-        <Label className="text-sm font-medium">
-          Rango de precio (COP millones)
-        </Label>
+        <Label className="text-sm font-medium">Rango de precio (COP)</Label>
         <Slider
-          min={50}
-          max={800}
-          step={10}
+          min={50_000_000}
+          max={800_000_000}
+          step={10_000_000}
           value={[filters.priceMin, filters.priceMax]}
           onValueChange={([min, max]) =>
             update({ priceMin: min, priceMax: max })
           }
         />
         <div className="flex justify-between text-xs text-muted-foreground">
-          <span>${filters.priceMin}M</span>
-          <span>${filters.priceMax}M</span>
+          <span>{formatCOP(filters.priceMin)}</span>
+          <span>{formatCOP(filters.priceMax)}</span>
         </div>
       </div>
 
