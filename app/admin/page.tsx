@@ -6,6 +6,14 @@ import { Pencil, Plus, Trash2 } from "lucide-react";
 import type { Property } from "@/types/property";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
 import {
   Table,
@@ -50,6 +58,11 @@ function cesionRoiPercent(currentPrice: number, originalPrice: number) {
 
 export default function AdminDashboardPage() {
   const [properties, setProperties] = useState<Property[]>([]);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [propertyToDelete, setPropertyToDelete] = useState<Property | null>(
+    null,
+  );
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
     const loadProperties = async () => {
@@ -75,30 +88,77 @@ export default function AdminDashboardPage() {
     [properties],
   );
 
-  const softDelete = async (id: string) => {
-    const property = rows.find((p) => p.id === id);
-    if (!property) return;
+  const requestDelete = (property: Property) => {
+    setPropertyToDelete(property);
+    setConfirmOpen(true);
+  };
 
-    const ok = window.confirm(`¿Eliminar "${property.projectName}"?`);
-    if (!ok) return;
+  const softDelete = async () => {
+    if (!propertyToDelete) return;
 
-    const res = await fetch(`/api/properties/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ is_deleted: true }),
-    });
+    setDeletingId(propertyToDelete.id);
 
-    if (!res.ok) {
-      toast.error("No se pudo eliminar el proyecto");
-      return;
+    try {
+      const res = await fetch(`/api/properties/${propertyToDelete.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "eliminado" }),
+      });
+
+      if (!res.ok) {
+        const error = await res.json().catch(() => null);
+        toast.error(error?.error ?? "No se pudo eliminar el proyecto");
+        return;
+      }
+
+      setProperties((prev) =>
+        prev.filter((item) => item.id !== propertyToDelete.id),
+      );
+      toast.success("Proyecto eliminado");
+      setConfirmOpen(false);
+      setPropertyToDelete(null);
+    } catch {
+      toast.error("Error de red al eliminar el proyecto");
+    } finally {
+      setDeletingId(null);
     }
-
-    setProperties((prev) => prev.filter((item) => item.id !== id));
-    toast.success("Proyecto eliminado");
   };
 
   return (
     <div className="space-y-6">
+      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Confirmar eliminación</DialogTitle>
+            <DialogDescription>
+              {`¿Seguro que deseas eliminar "${propertyToDelete?.projectName ?? "este proyecto"}"? Esta acción oculta la propiedad del listado activo.`}
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setConfirmOpen(false);
+                setPropertyToDelete(null);
+              }}
+              disabled={deletingId !== null}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={softDelete}
+              disabled={deletingId !== null}
+            >
+              {deletingId !== null ? "Eliminando..." : "Eliminar"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <div className="group rounded-2xl border border-border/50 bg-card shadow-card hover:shadow-card-hover transition-all duration-300">
         <div className="p-6">
           <div className="flex items-start justify-between gap-4">
@@ -254,10 +314,11 @@ export default function AdminDashboardPage() {
                         size="sm"
                         variant="destructive"
                         className="gap-2"
-                        onClick={() => softDelete(p.id)}
+                        onClick={() => requestDelete(p)}
+                        disabled={deletingId !== null}
                       >
                         <Trash2 className="h-4 w-4" />
-                        Eliminar
+                        {deletingId === p.id ? "Eliminando..." : "Eliminar"}
                       </Button>
                     </div>
                   </TableCell>

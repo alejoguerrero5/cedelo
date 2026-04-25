@@ -54,10 +54,8 @@ const PropertyCard = ({ property, viewMode }: PropertyCardProps) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [galleryIndex, setGalleryIndex] = useState(0);
-  const galleryImages =
-    property.images && property.images.length > 0
-      ? property.images
-      : [property.image];
+  const hasImages = !!(property.images && property.images.length > 0);
+  const galleryImages = hasImages ? property.images! : [property.image];
   const salePrice = getSalePrice(property.currentPrice, property.originalPrice);
   const discountPercent = getDiscountPercent(
     property.currentPrice,
@@ -160,8 +158,9 @@ const PropertyCard = ({ property, viewMode }: PropertyCardProps) => {
         <div className="relative w-64 min-h-50 shrink-0 bg-muted overflow-hidden">
           <button
             type="button"
-            onClick={() => openGallery(0)}
-            className="absolute inset-0 z-10"
+            onClick={() => hasImages && openGallery(0)}
+            disabled={!hasImages}
+            className={`absolute inset-0 z-10 ${!hasImages ? "cursor-not-allowed" : "cursor-pointer"}`}
             aria-label="Abrir galeria de imagenes"
           />
           <Image
@@ -297,8 +296,9 @@ const PropertyCard = ({ property, viewMode }: PropertyCardProps) => {
       <div className="relative h-48 bg-muted overflow-hidden">
         <button
           type="button"
-          onClick={() => openGallery(0)}
-          className="absolute inset-0 z-10"
+          onClick={() => hasImages && openGallery(0)}
+          disabled={!hasImages}
+          className={`absolute inset-0 z-10 ${!hasImages ? "cursor-not-allowed" : "cursor-pointer"}`}
           aria-label="Abrir galeria de imagenes"
         />
         <Image
