@@ -179,13 +179,30 @@ export default function EditProjectPage() {
     }
   };
 
-  const removeImage = (imageUrl: string) => {
-    const current = form.getValues("images");
-    form.setValue(
-      "images",
-      current.filter((value) => value !== imageUrl),
-      { shouldDirty: true },
-    );
+  const removeImage = async (imageUrl: string) => {
+    try {
+      const res = await fetch("/api/properties/upload", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: imageUrl }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "No se pudo eliminar la imagen");
+      }
+
+      const current = form.getValues("images");
+      form.setValue(
+        "images",
+        current.filter((value) => value !== imageUrl),
+        { shouldDirty: true },
+      );
+      toast.success("Imagen eliminada");
+    } catch (error) {
+      console.error(error);
+      toast.error("No se pudo eliminar la imagen del storage");
+    }
   };
 
   const save = async (values: ProjectFormValues) => {
@@ -411,25 +428,26 @@ export default function EditProjectPage() {
               {form.watch("images").map((imageUrl) => (
                 <div
                   key={imageUrl}
-                  className="group relative overflow-hidden rounded-lg border border-border/50 bg-muted"
+                  className="overflow-hidden rounded-lg border border-border/50 bg-card"
                 >
                   <div className="relative aspect-4/3 w-full">
                     <Image
                       src={imageUrl}
                       alt="Imagen del proyecto"
                       fill
-                      className="object-cover transition-transform duration-200 group-hover:scale-105"
+                      className="object-cover"
                     />
                   </div>
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="sm"
-                    className="absolute right-2 top-2 h-7 px-2"
-                    onClick={() => removeImage(imageUrl)}
-                  >
-                    Quitar
-                  </Button>
+                  <div className="flex items-center justify-end border-t border-border/50 bg-white px-3 py-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => void removeImage(imageUrl)}
+                    >
+                      Quitar
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>

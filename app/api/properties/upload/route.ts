@@ -43,3 +43,53 @@ export async function POST(req: Request) {
     );
   }
 }
+
+export async function DELETE(req: Request) {
+  try {
+    const body = await req.json();
+    const imageUrl = typeof body?.url === "string" ? body.url.trim() : "";
+
+    if (!imageUrl) {
+      return NextResponse.json({ error: "URL inválida" }, { status: 400 });
+    }
+
+    let filePath = "";
+    try {
+      const parsed = new URL(imageUrl);
+      const marker = `/storage/v1/object/public/${bucketName}/`;
+      const index = parsed.pathname.indexOf(marker);
+      if (index >= 0) {
+        filePath = decodeURIComponent(
+          parsed.pathname.slice(index + marker.length),
+        );
+      }
+    } catch {
+      return NextResponse.json({ error: "URL inválida" }, { status: 400 });
+    }
+
+    if (!filePath) {
+      return NextResponse.json(
+        { error: "No se pudo resolver la ruta del archivo" },
+        { status: 400 },
+      );
+    }
+
+    const { error } = await supabaseAdmin.storage
+      .from(bucketName)
+      .remove([filePath]);
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ ok: true }, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error:
+          error instanceof Error ? error.message : "Error eliminando imagen",
+      },
+      { status: 500 },
+    );
+  }
+}
