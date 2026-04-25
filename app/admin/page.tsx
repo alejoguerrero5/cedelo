@@ -56,7 +56,7 @@ export default function AdminDashboardPage() {
       ),
     [properties],
   );
-  console.log("rows", rows);
+
   const softDelete = async (id: string) => {
     const property = rows.find((p) => p.id === id);
     if (!property) return;
@@ -114,25 +114,41 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
-      <div className="overflow-x-auto pb-6">
-        <div className="overflow-hidden rounded-2xl border border-border/50">
-          <Table>
-            <TableHeader className="bg-secondary/60">
-              <TableRow>
-                <TableHead>Proyecto</TableHead>
-                <TableHead>Ubicación</TableHead>
-                <TableHead>Precio</TableHead>
-                <TableHead>ROI</TableHead>
-                <TableHead>Estado</TableHead>
-                <TableHead>Creado</TableHead>
-                <TableHead className="text-right">Acciones</TableHead>
-              </TableRow>
-            </TableHeader>
+      <div className="overflow-hidden rounded-2xl border border-border/50 bg-card shadow-card">
+        <Table>
+          <TableHeader className="bg-white/90 [&_tr]:border-border/40">
+            <TableRow className="hover:bg-transparent">
+              <TableHead className="px-6 text-foreground/70">
+                Proyecto
+              </TableHead>
+              <TableHead className="text-foreground/70">Ubicación</TableHead>
+              <TableHead className="text-foreground/70">Precio</TableHead>
+              <TableHead className="text-foreground/70">ROI</TableHead>
+              <TableHead className="text-foreground/70">Estado</TableHead>
+              <TableHead className="text-foreground/70">Creado</TableHead>
+              <TableHead className="px-6 text-right text-foreground/70">
+                Acciones
+              </TableHead>
+            </TableRow>
+          </TableHeader>
 
-            <TableBody>
-              {rows.map((p) => (
-                <TableRow key={p.id}>
-                  <TableCell>
+          <TableBody className="[&_tr:last-child]:border-b-0">
+            {rows.length === 0 ? (
+              <TableRow className="bg-gray-50/80 hover:bg-gray-50/80">
+                <TableCell
+                  colSpan={7}
+                  className="px-6 py-12 text-center text-muted-foreground"
+                >
+                  No hay proyectos activos.
+                </TableCell>
+              </TableRow>
+            ) : (
+              rows.map((p) => (
+                <TableRow
+                  key={p.id}
+                  className="border-border/40 bg-gray-50/85 hover:bg-white/95"
+                >
+                  <TableCell className="px-6">
                     <div className="font-semibold text-foreground">
                       {p.projectName}
                     </div>
@@ -143,20 +159,20 @@ export default function AdminDashboardPage() {
                   </TableCell>
 
                   <TableCell>
-                    <div className="text-foreground">{p.city}</div>
+                    <div className="font-medium text-foreground">{p.city}</div>
                     <div className="text-xs text-muted-foreground">
                       {p.neighborhood}
                     </div>
                   </TableCell>
 
                   <TableCell>
-                    <div className="font-semibold">
+                    <div className="font-semibold text-foreground">
                       {formatPrice(p.currentPrice)}
                     </div>
                     <div className="text-xs text-muted-foreground line-through">
                       {formatPrice(p.originalPrice)}
                     </div>
-                    <div className="text-xs text-success font-semibold">
+                    <div className="text-xs font-semibold text-success">
                       {p.discount}% OFF
                     </div>
                   </TableCell>
@@ -164,9 +180,9 @@ export default function AdminDashboardPage() {
                   <TableCell>
                     <Badge
                       variant="outline"
-                      className="border-primary text-primary"
+                      className="border-primary/25 bg-primary/5 text-primary"
                     >
-                      {p?.roi}%
+                      {p.roi}%
                     </Badge>
                   </TableCell>
 
@@ -176,17 +192,17 @@ export default function AdminDashboardPage() {
                     </Badge>
                   </TableCell>
 
-                  <TableCell className="text-muted-foreground">
+                  <TableCell className="text-sm text-muted-foreground">
                     {p.createdAt}
                   </TableCell>
 
-                  <TableCell>
+                  <TableCell className="px-6">
                     <div className="flex justify-end gap-2">
                       <Button
                         asChild
                         size="sm"
                         variant="outline"
-                        className="gap-2"
+                        className="gap-2 bg-white shadow-sm"
                       >
                         <Link href={`/admin/proyectos/${p.id}/editar`}>
                           <Pencil className="h-4 w-4" />
@@ -206,21 +222,10 @@ export default function AdminDashboardPage() {
                     </div>
                   </TableCell>
                 </TableRow>
-              ))}
-
-              {rows.length === 0 && (
-                <TableRow>
-                  <TableCell
-                    colSpan={7}
-                    className="text-center py-10 text-muted-foreground"
-                  >
-                    No hay proyectos activos.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
+              ))
+            )}
+          </TableBody>
+        </Table>
       </div>
     </div>
   );
