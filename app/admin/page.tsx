@@ -21,29 +21,28 @@ function formatPrice(price: number) {
 }
 
 function statusLabel(status: Property["status"]) {
-  return status === "en-planos" ? "En planos" : "En construcción";
+  if (status === "en-venta") return "En venta";
+  if (status === "en-planos") return "En planos";
+  return "En construcción";
 }
 
 function statusVariant(status: Property["status"]) {
-  return status === "en-planos" ? ("secondary" as const) : ("default" as const);
+  return status === "en-venta" ? ("default" as const) : ("secondary" as const);
 }
 
 export default function AdminDashboardPage() {
   const [properties, setProperties] = useState<Property[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadProperties = async () => {
       const res = await fetch("/api/properties");
       if (!res.ok) {
         toast.error("No se pudieron cargar los proyectos");
-        setLoading(false);
         return;
       }
 
       const data = await res.json();
       setProperties(data ?? []);
-      setLoading(false);
     };
 
     loadProperties();
@@ -57,14 +56,12 @@ export default function AdminDashboardPage() {
       ),
     [properties],
   );
-
+  console.log("rows", rows);
   const softDelete = async (id: string) => {
     const property = rows.find((p) => p.id === id);
     if (!property) return;
 
-    const ok = window.confirm(
-      `¿Eliminar "${property.title}"? (soft delete, se puede recuperar luego)`,
-    );
+    const ok = window.confirm(`¿Eliminar "${property.projectName}"?`);
     if (!ok) return;
 
     const res = await fetch(`/api/properties/${id}`, {
@@ -137,7 +134,7 @@ export default function AdminDashboardPage() {
                 <TableRow key={p.id}>
                   <TableCell>
                     <div className="font-semibold text-foreground">
-                      {p.title}
+                      {p.projectName}
                     </div>
                     <div className="text-xs text-muted-foreground">
                       {p.type} · {p.area}m² · {p.bedrooms} hab · {p.bathrooms}{" "}

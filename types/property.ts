@@ -1,5 +1,6 @@
 export interface Property {
   id: string;
+  projectName?: string;
   title: string;
   city: string;
   neighborhood: string;
@@ -11,11 +12,13 @@ export interface Property {
   bedrooms: number;
   bathrooms: number;
   type: "apartamento" | "casa";
-  status: "en-planos" | "en-construccion";
+  status: "en-venta" | "en-planos" | "en-construccion";
   completionPercent: number;
   image: string;
+  images?: string[];
   isVIS: boolean;
   createdAt: string;
+  deliveryDate?: string | null;
 }
 
 export interface Filters {
