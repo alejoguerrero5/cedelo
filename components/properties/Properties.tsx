@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { LayoutGrid, List, SlidersHorizontal, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,18 +25,37 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
-import { Filters, defaultFilters } from "@/types/property";
+import { Filters, Property, defaultFilters } from "@/types/property";
 import FilterSidebar from "@/components/properties/FilterSideBar";
 import PropertyCard from "@/components/properties/PropertyCard";
-import { mockProperties } from "@/data/mockProperties";
 
 const ITEMS_PER_PAGE = 6;
 
 const Properties = () => {
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<Filters>(defaultFilters);
   const [sortBy, setSortBy] = useState("recent");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    const loadProperties = async () => {
+      try {
+        const res = await fetch("/api/properties");
+        if (!res.ok) throw new Error("No se pudieron cargar propiedades");
+        const data = await res.json();
+        setProperties(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error(error);
+        setProperties([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProperties();
+  }, []);
 
   const activeFilterCount = useMemo(() => {
     let count = 0;
@@ -61,15 +80,20 @@ const Properties = () => {
   }, [filters]);
 
   const filtered = useMemo(() => {
-    let result = [...mockProperties];
+    let result = [...properties];
 
     if (filters.city && filters.city !== "all")
       result = result.filter((p) => p.city === filters.city);
-    result = result.filter(
-      (p) =>
-        p.currentPrice >= filters.priceMin &&
-        p.currentPrice <= filters.priceMax,
-    );
+    if (
+      filters.priceMin !== defaultFilters.priceMin ||
+      filters.priceMax !== defaultFilters.priceMax
+    ) {
+      result = result.filter(
+        (p) =>
+          p.currentPrice >= filters.priceMin &&
+          p.currentPrice <= filters.priceMax,
+      );
+    }
     if (filters.types.length > 0)
       result = result.filter((p) => filters.types.includes(p.type));
     if (filters.status && filters.status !== "all")
@@ -78,9 +102,14 @@ const Properties = () => {
       result = result.filter((p) => p.discount >= filters.discountMin);
     if (filters.roiMin > 0)
       result = result.filter((p) => p.roi >= filters.roiMin);
-    result = result.filter(
-      (p) => p.area >= filters.areaMin && p.area <= filters.areaMax,
-    );
+    if (
+      filters.areaMin !== defaultFilters.areaMin ||
+      filters.areaMax !== defaultFilters.areaMax
+    ) {
+      result = result.filter(
+        (p) => p.area >= filters.areaMin && p.area <= filters.areaMax,
+      );
+    }
     if (filters.bedrooms && filters.bedrooms !== "all") {
       const b = parseInt(filters.bedrooms);
       result = result.filter((p) =>
@@ -94,7 +123,6 @@ const Properties = () => {
       );
     }
 
-    // Sort
     switch (sortBy) {
       case "price-asc":
         result.sort((a, b) => a.currentPrice - b.currentPrice);
@@ -113,7 +141,7 @@ const Properties = () => {
     }
 
     return result;
-  }, [filters, sortBy]);
+  }, [filters, properties, sortBy]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
   const paginated = filtered.slice(
@@ -123,7 +151,6 @@ const Properties = () => {
 
   return (
     <div className="container-section">
-      {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
           Propiedades disponibles
@@ -134,7 +161,6 @@ const Properties = () => {
       </div>
 
       <div className="flex gap-8">
-        {/* Desktop Sidebar */}
         <aside className="hidden lg:block w-72 shrink-0">
           <div className="sticky top-24 bg-card rounded-2xl border border-border/50 p-6 shadow-card">
             <FilterSidebar
@@ -148,12 +174,9 @@ const Properties = () => {
           </div>
         </aside>
 
-        {/* Main */}
         <div className="flex-1 min-w-0">
-          {/* Toolbar */}
           <div className="flex flex-wrap items-center justify-between gap-4 mb-6 bg-card rounded-xl border border-border/50 p-4">
             <div className="flex items-center gap-3">
-              {/* Mobile filter button */}
               <Sheet>
                 <SheetTrigger asChild>
                   <Button
@@ -198,7 +221,7 @@ const Properties = () => {
                   <SelectValue placeholder="Ordenar por" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="recent">Más reciente</SelectItem>
+                  <SelectItem value="recent">Mas reciente</SelectItem>
                   <SelectItem value="price-asc">Menor precio</SelectItem>
                   <SelectItem value="discount">Mayor descuento</SelectItem>
                   <SelectItem value="roi">Mayor ROI</SelectItem>
@@ -222,8 +245,13 @@ const Properties = () => {
             </div>
           </div>
 
-          {/* Results */}
-          {paginated.length === 0 ? (
+          {loading ? (
+            <div className="text-center py-20">
+              <p className="text-muted-foreground text-lg">
+                Cargando propiedades...
+              </p>
+            </div>
+          ) : paginated.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-muted-foreground text-lg mb-4">
                 No se encontraron propiedades con los filtros seleccionados.
@@ -253,7 +281,6 @@ const Properties = () => {
             </div>
           )}
 
-          {/* Pagination */}
           {totalPages > 1 && (
             <div className="mt-8">
               <Pagination>
