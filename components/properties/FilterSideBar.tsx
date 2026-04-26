@@ -12,18 +12,24 @@ import {
 } from "@/components/ui/select";
 import { Filter, X } from "lucide-react";
 import { Badge } from "../ui/badge";
-import { defaultFilters, Filters } from "@/types/property";
+import { Filters } from "@/types/property";
 import { cities } from "@/data/options";
 
 interface FilterSidebarProps {
   filters: Filters;
   onFiltersChange: (filters: Filters) => void;
+  onApplyFilters: () => void;
+  onClearFilters: () => void;
+  hasPendingChanges: boolean;
   activeCount: number;
 }
 
 const FilterSidebar = ({
   filters,
   onFiltersChange,
+  onApplyFilters,
+  onClearFilters,
+  hasPendingChanges,
   activeCount,
 }: FilterSidebarProps) => {
   const formatCOP = (value: number) =>
@@ -59,6 +65,24 @@ const FilterSidebar = ({
 
       {/* Ciudad */}
       <div className="space-y-2">
+        <div className="space-y-2 pt-2">
+          <Button
+            className="w-full gradient-cta text-primary-foreground"
+            onClick={onApplyFilters}
+            disabled={!hasPendingChanges}
+          >
+            Aplicar filtros
+          </Button>
+          <Button
+            variant="ghost"
+            size={"sm"}
+            className="w-full text-muted-foreground"
+            onClick={onClearFilters}
+          >
+            <X className="w-4 h-4 mr-1" />
+            Limpiar filtros
+          </Button>
+        </div>
         <Label className="text-sm font-medium">Ubicación</Label>
         <Select value={filters.city} onValueChange={(v) => update({ city: v })}>
           <SelectTrigger className="h-10 bg-gray-50 shadow text-foreground">
@@ -221,14 +245,15 @@ const FilterSidebar = ({
       <div className="space-y-2 pt-2">
         <Button
           className="w-full gradient-cta text-primary-foreground"
-          onClick={() => {}}
+          onClick={onApplyFilters}
+          disabled={!hasPendingChanges}
         >
           Aplicar filtros
         </Button>
         <Button
           variant="ghost"
           className="w-full text-muted-foreground"
-          onClick={() => onFiltersChange(defaultFilters)}
+          onClick={onClearFilters}
         >
           <X className="w-4 h-4 mr-1" />
           Limpiar filtros
