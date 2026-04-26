@@ -201,7 +201,7 @@ const Calculator = () => {
                         onChange={(e) =>
                           handleInputChange(setPrecioCompra, e.target.value)
                         }
-                        className="pl-12 h-14 text-lg bg-secondary border-border focus:border-primary"
+                        className="pl-12 h-14 text-lg bg-gray-50 shadow focus:ring-2 focus:ring-accent/50 text-foreground placeholder:text-muted-foreground/70"
                         placeholder="200,000,000"
                       />
                     </div>
@@ -227,7 +227,7 @@ const Calculator = () => {
                         onChange={(e) =>
                           handleInputChange(setPrecioActual, e.target.value)
                         }
-                        className="pl-12 h-14 text-lg bg-secondary border-border focus:border-primary"
+                        className="pl-12 h-14 text-lg bg-gray-50 shadow focus:ring-2 focus:ring-accent/50 text-foreground placeholder:text-muted-foreground/70"
                         placeholder="250,000,000"
                       />
                     </div>
@@ -245,7 +245,7 @@ const Calculator = () => {
                       type="number"
                       value={meses}
                       onChange={(e) => setMeses(e.target.value)}
-                      className="h-14 text-lg bg-secondary border-border focus:border-primary"
+                      className="h-14 text-lg bg-gray-50 shadow focus:ring-2 focus:ring-accent/50 text-foreground placeholder:text-muted-foreground/70"
                       placeholder="12"
                       min="1"
                     />
@@ -263,8 +263,8 @@ const Calculator = () => {
 
                 {/* Results Cards */}
                 <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-3">
-                  <div className="bg-secondary rounded-xl p-4 text-center">
-                    <Percent className="w-5 h-5 text-primary mx-auto mb-2" />
+                  <div className="bg-accent/8 rounded-xl p-4 text-center shadow-lg">
+                    <Percent className="w-5 h-5 text-accent mx-auto mb-2" />
                     <p className="text-xs text-muted-foreground mb-1">
                       ROI Total
                     </p>
@@ -276,8 +276,8 @@ const Calculator = () => {
                       {results.roi.toFixed(1)}%
                     </p>
                   </div>
-                  <div className="bg-secondary rounded-xl p-4 text-center">
-                    <TrendingUp className="w-5 h-5 text-primary mx-auto mb-2" />
+                  <div className="bg-success/8 rounded-xl p-4 text-center shadow-lg">
+                    <TrendingUp className="w-5 h-5 text-success mx-auto mb-2" />
                     <p className="text-xs text-muted-foreground mb-1">
                       ROI Anual
                     </p>
@@ -290,7 +290,7 @@ const Calculator = () => {
                     </p>
                   </div>
                   {/* Inversión */}
-                  <div className="bg-secondary rounded-xl p-4 text-center">
+                  <div className="bg-primary/8 rounded-xl p-4 text-center shadow-lg">
                     <DollarSign className="w-5 h-5 text-primary mx-auto mb-2" />
                     <p className="text-xs text-muted-foreground mb-1">
                       Inversión

@@ -5,6 +5,21 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY!);
 
+export async function GET() {
+  const { data, error } = await supabase
+    .from("leads")
+    .select("id, name, email, phone, city, created_at")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    return new Response(JSON.stringify({ error: "Error consultando leads" }), {
+      status: 500,
+    });
+  }
+
+  return new Response(JSON.stringify(data ?? []), { status: 200 });
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();

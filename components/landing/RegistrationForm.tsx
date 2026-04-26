@@ -165,8 +165,8 @@ const RegistrationForm = () => {
                   id="nombre"
                   type="text"
                   placeholder="Juan Carlos Rodríguez"
-                  className={`h-12 bg-secondary border-border focus:border-primary ${
-                    errors.name ? "border-destructive" : ""
+                  className={`h-12 bg-gray-50 shadow focus:ring-2 focus:ring-accent/50 text-foreground placeholder:text-muted-foreground/70 ${
+                    errors.name ? "ring-2 ring-destructive" : ""
                   }`}
                   {...register("name", {
                     required: "El nombre es requerido",
@@ -195,8 +195,8 @@ const RegistrationForm = () => {
                   id="email"
                   type="email"
                   placeholder="ejemplo@correo.com"
-                  className={`h-12 bg-secondary border-border focus:border-primary ${
-                    errors.email ? "border-destructive" : ""
+                  className={`h-12 bg-gray-50 shadow focus:ring-2 focus:ring-accent/50 text-foreground placeholder:text-muted-foreground/70 ${
+                    errors.email ? "ring-2 ring-destructive" : ""
                   }`}
                   {...register("email", {
                     required: "El email es requerido",
@@ -225,8 +225,8 @@ const RegistrationForm = () => {
                   id="telefono"
                   type="tel"
                   placeholder="300 123 4567"
-                  className={`h-12 bg-secondary border-border focus:border-primary ${
-                    errors.phone ? "border-destructive" : ""
+                  className={`h-12 bg-gray-50 shadow focus:ring-2 focus:ring-accent/50 text-foreground placeholder:text-muted-foreground/70 ${
+                    errors.phone ? "ring-2 ring-destructive" : ""
                   }`}
                   {...register("phone", {
                     required: "El teléfono es requerido",
@@ -260,8 +260,8 @@ const RegistrationForm = () => {
                         onValueChange={field.onChange}
                       >
                         <SelectTrigger
-                          className={`h-12 bg-secondary border-border ${
-                            errors.city ? "border-destructive" : ""
+                          className={`h-12 bg-gray-50 shadow text-foreground ${
+                            errors.city ? "ring-2 ring-destructive" : ""
                           }`}
                         >
                           <SelectValue placeholder="Selecciona ciudad" />
@@ -298,8 +298,8 @@ const RegistrationForm = () => {
                         onValueChange={field.onChange}
                       >
                         <SelectTrigger
-                          className={`h-12 bg-secondary border-border ${
-                            errors.projectType ? "border-destructive" : ""
+                          className={`h-12 bg-gray-50 shadow text-foreground ${
+                            errors.projectType ? "ring-2 ring-destructive" : ""
                           }`}
                         >
                           <SelectValue placeholder="Selecciona tipo" />

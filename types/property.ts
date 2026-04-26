@@ -1,5 +1,6 @@
 export interface Property {
   id: string;
+  projectName?: string;
   title: string;
   city: string;
   neighborhood: string;
@@ -11,11 +12,13 @@ export interface Property {
   bedrooms: number;
   bathrooms: number;
   type: "apartamento" | "casa";
-  status: "en-planos" | "en-construccion";
+  status: "en-venta" | "en-planos" | "en-construccion" | "eliminado";
   completionPercent: number;
   image: string;
+  images?: string[];
   isVIS: boolean;
   createdAt: string;
+  deliveryDate?: string | null;
 }
 
 export interface Filters {
@@ -36,8 +39,8 @@ export interface Filters {
 
 export const defaultFilters: Filters = {
   city: "",
-  priceMin: 50,
-  priceMax: 800,
+  priceMin: 50_000_000,
+  priceMax: 800_000_000,
   types: [],
   status: "",
   completionMin: 0,

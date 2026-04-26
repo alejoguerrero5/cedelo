@@ -126,18 +126,6 @@ const Navbar = () => {
           {/* Desktop Auth Buttons */}
 
           <div className="hidden md:flex items-center gap-3">
-            {!shouldHideMenu && !hideForMVP && (
-              <Button
-                variant="ghost"
-                className={`transition-colors ${
-                  isScrolled
-                    ? "text-foreground hover:bg-muted"
-                    : "text-primary-foreground border-primary-foreground/30 hover:bg-primary-foreground/10"
-                }`}
-              >
-                Iniciar sesión
-              </Button>
-            )}
             {showButton()}
           </div>
 

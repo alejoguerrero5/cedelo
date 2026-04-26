@@ -12,20 +12,33 @@ import {
 } from "@/components/ui/select";
 import { Filter, X } from "lucide-react";
 import { Badge } from "../ui/badge";
-import { defaultFilters, Filters } from "@/types/property";
+import { Filters } from "@/types/property";
 import { cities } from "@/data/options";
 
 interface FilterSidebarProps {
   filters: Filters;
   onFiltersChange: (filters: Filters) => void;
+  onApplyFilters: () => void;
+  onClearFilters: () => void;
+  hasPendingChanges: boolean;
   activeCount: number;
 }
 
 const FilterSidebar = ({
   filters,
   onFiltersChange,
+  onApplyFilters,
+  onClearFilters,
+  hasPendingChanges,
   activeCount,
 }: FilterSidebarProps) => {
+  const formatCOP = (value: number) =>
+    new Intl.NumberFormat("es-CO", {
+      style: "currency",
+      currency: "COP",
+      maximumFractionDigits: 0,
+    }).format(value);
+
   const update = (partial: Partial<Filters>) =>
     onFiltersChange({ ...filters, ...partial });
 
@@ -52,9 +65,27 @@ const FilterSidebar = ({
 
       {/* Ciudad */}
       <div className="space-y-2">
+        <div className="space-y-2 pt-2">
+          <Button
+            className="w-full gradient-cta text-primary-foreground"
+            onClick={onApplyFilters}
+            disabled={!hasPendingChanges}
+          >
+            Aplicar filtros
+          </Button>
+          <Button
+            variant="ghost"
+            size={"sm"}
+            className="w-full text-muted-foreground"
+            onClick={onClearFilters}
+          >
+            <X className="w-4 h-4 mr-1" />
+            Limpiar filtros
+          </Button>
+        </div>
         <Label className="text-sm font-medium">Ubicación</Label>
         <Select value={filters.city} onValueChange={(v) => update({ city: v })}>
-          <SelectTrigger className="h-10 bg-secondary border-border">
+          <SelectTrigger className="h-10 bg-gray-50 shadow text-foreground">
             <SelectValue placeholder="Todas las ciudades" />
           </SelectTrigger>
           <SelectContent>
@@ -70,21 +101,19 @@ const FilterSidebar = ({
 
       {/* Precio */}
       <div className="space-y-3">
-        <Label className="text-sm font-medium">
-          Rango de precio (COP millones)
-        </Label>
+        <Label className="text-sm font-medium">Rango de precio (COP)</Label>
         <Slider
-          min={50}
-          max={800}
-          step={10}
+          min={50_000_000}
+          max={800_000_000}
+          step={10_000_000}
           value={[filters.priceMin, filters.priceMax]}
           onValueChange={([min, max]) =>
             update({ priceMin: min, priceMax: max })
           }
         />
         <div className="flex justify-between text-xs text-muted-foreground">
-          <span>${filters.priceMin}M</span>
-          <span>${filters.priceMax}M</span>
+          <span>{formatCOP(filters.priceMin)}</span>
+          <span>{formatCOP(filters.priceMax)}</span>
         </div>
       </div>
 
@@ -117,7 +146,7 @@ const FilterSidebar = ({
           value={filters.status}
           onValueChange={(v) => update({ status: v })}
         >
-          <SelectTrigger className="h-10 bg-secondary border-border">
+          <SelectTrigger className="h-10 bg-gray-50 shadow text-foreground">
             <SelectValue placeholder="Todos los estados" />
           </SelectTrigger>
           <SelectContent>
@@ -179,7 +208,7 @@ const FilterSidebar = ({
           value={filters.bedrooms}
           onValueChange={(v) => update({ bedrooms: v })}
         >
-          <SelectTrigger className="h-10 bg-secondary border-border">
+          <SelectTrigger className="h-10 bg-gray-50 shadow text-foreground">
             <SelectValue placeholder="Cualquiera" />
           </SelectTrigger>
           <SelectContent>
@@ -199,7 +228,7 @@ const FilterSidebar = ({
           value={filters.bathrooms}
           onValueChange={(v) => update({ bathrooms: v })}
         >
-          <SelectTrigger className="h-10 bg-secondary border-border">
+          <SelectTrigger className="h-10 bg-gray-50 shadow text-foreground">
             <SelectValue placeholder="Cualquiera" />
           </SelectTrigger>
           <SelectContent>
@@ -216,14 +245,15 @@ const FilterSidebar = ({
       <div className="space-y-2 pt-2">
         <Button
           className="w-full gradient-cta text-primary-foreground"
-          onClick={() => {}}
+          onClick={onApplyFilters}
+          disabled={!hasPendingChanges}
         >
           Aplicar filtros
         </Button>
         <Button
           variant="ghost"
           className="w-full text-muted-foreground"
-          onClick={() => onFiltersChange(defaultFilters)}
+          onClick={onClearFilters}
         >
           <X className="w-4 h-4 mr-1" />
           Limpiar filtros

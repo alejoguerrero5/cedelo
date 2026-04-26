@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { LayoutGrid, List, SlidersHorizontal, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,85 +25,164 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
-import { Filters, defaultFilters } from "@/types/property";
+import { Filters, Property, defaultFilters } from "@/types/property";
 import FilterSidebar from "@/components/properties/FilterSideBar";
 import PropertyCard from "@/components/properties/PropertyCard";
-import { mockProperties } from "@/data/mockProperties";
 
 const ITEMS_PER_PAGE = 6;
 
+const getSalePrice = (currentPrice: number, originalPrice: number) =>
+  currentPrice - (currentPrice - originalPrice) / 2;
+
+const getDiscountPercent = (currentPrice: number, originalPrice: number) => {
+  if (currentPrice <= 0) return 0;
+  const salePrice = getSalePrice(currentPrice, originalPrice);
+  return ((currentPrice - salePrice) / currentPrice) * 100;
+};
+
+const getMainRoiPercent = (currentPrice: number, originalPrice: number) => {
+  const salePrice = getSalePrice(currentPrice, originalPrice);
+  if (salePrice <= 0) return 0;
+  const potentialProfit = currentPrice - salePrice;
+  return (potentialProfit / salePrice) * 100;
+};
+
 const Properties = () => {
-  const [filters, setFilters] = useState<Filters>(defaultFilters);
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [draftFilters, setDraftFilters] = useState<Filters>(defaultFilters);
+  const [appliedFilters, setAppliedFilters] = useState<Filters>(defaultFilters);
   const [sortBy, setSortBy] = useState("recent");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [page, setPage] = useState(1);
 
+  useEffect(() => {
+    const loadProperties = async () => {
+      try {
+        const res = await fetch("/api/properties?status=en-venta");
+        if (!res.ok) throw new Error("No se pudieron cargar propiedades");
+
+        const data = await res.json();
+        setProperties(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error(error);
+        setProperties([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProperties();
+  }, []);
+
   const activeFilterCount = useMemo(() => {
     let count = 0;
-    if (filters.city && filters.city !== "all") count++;
+    if (draftFilters.city && draftFilters.city !== "all") count++;
     if (
-      filters.priceMin !== defaultFilters.priceMin ||
-      filters.priceMax !== defaultFilters.priceMax
+      draftFilters.priceMin !== defaultFilters.priceMin ||
+      draftFilters.priceMax !== defaultFilters.priceMax
     )
       count++;
-    if (filters.types.length > 0) count++;
-    if (filters.status && filters.status !== "all") count++;
-    if (filters.discountMin > 0) count++;
-    if (filters.roiMin > 0) count++;
+    if (draftFilters.types.length > 0) count++;
+    if (draftFilters.status && draftFilters.status !== "all") count++;
+    if (draftFilters.discountMin > 0) count++;
+    if (draftFilters.roiMin > 0) count++;
     if (
-      filters.areaMin !== defaultFilters.areaMin ||
-      filters.areaMax !== defaultFilters.areaMax
+      draftFilters.areaMin !== defaultFilters.areaMin ||
+      draftFilters.areaMax !== defaultFilters.areaMax
     )
       count++;
-    if (filters.bedrooms && filters.bedrooms !== "all") count++;
-    if (filters.bathrooms && filters.bathrooms !== "all") count++;
+    if (draftFilters.bedrooms && draftFilters.bedrooms !== "all") count++;
+    if (draftFilters.bathrooms && draftFilters.bathrooms !== "all") count++;
     return count;
-  }, [filters]);
+  }, [draftFilters]);
+
+  const hasPendingFilterChanges = useMemo(
+    () => JSON.stringify(draftFilters) !== JSON.stringify(appliedFilters),
+    [draftFilters, appliedFilters],
+  );
+
+  const applyFilters = () => {
+    setAppliedFilters(draftFilters);
+    setPage(1);
+  };
+
+  const clearFilters = () => {
+    setDraftFilters(defaultFilters);
+    setAppliedFilters(defaultFilters);
+    setPage(1);
+  };
 
   const filtered = useMemo(() => {
-    let result = [...mockProperties];
+    let result = [...properties];
 
-    if (filters.city && filters.city !== "all")
-      result = result.filter((p) => p.city === filters.city);
-    result = result.filter(
-      (p) =>
-        p.currentPrice >= filters.priceMin &&
-        p.currentPrice <= filters.priceMax,
-    );
-    if (filters.types.length > 0)
-      result = result.filter((p) => filters.types.includes(p.type));
-    if (filters.status && filters.status !== "all")
-      result = result.filter((p) => p.status === filters.status);
-    if (filters.discountMin > 0)
-      result = result.filter((p) => p.discount >= filters.discountMin);
-    if (filters.roiMin > 0)
-      result = result.filter((p) => p.roi >= filters.roiMin);
-    result = result.filter(
-      (p) => p.area >= filters.areaMin && p.area <= filters.areaMax,
-    );
-    if (filters.bedrooms && filters.bedrooms !== "all") {
-      const b = parseInt(filters.bedrooms);
+    if (appliedFilters.city && appliedFilters.city !== "all")
+      result = result.filter((p) => p.city === appliedFilters.city);
+    if (
+      appliedFilters.priceMin !== defaultFilters.priceMin ||
+      appliedFilters.priceMax !== defaultFilters.priceMax
+    ) {
+      result = result.filter(
+        (p) =>
+          p.currentPrice >= appliedFilters.priceMin &&
+          p.currentPrice <= appliedFilters.priceMax,
+      );
+    }
+    if (appliedFilters.types.length > 0)
+      result = result.filter((p) => appliedFilters.types.includes(p.type));
+    if (appliedFilters.status && appliedFilters.status !== "all")
+      result = result.filter((p) => p.status === appliedFilters.status);
+    if (appliedFilters.discountMin > 0)
+      result = result.filter(
+        (p) =>
+          getDiscountPercent(p.currentPrice, p.originalPrice) >=
+          appliedFilters.discountMin,
+      );
+    if (appliedFilters.roiMin > 0)
+      result = result.filter(
+        (p) =>
+          getMainRoiPercent(p.currentPrice, p.originalPrice) >=
+          appliedFilters.roiMin,
+      );
+    if (
+      appliedFilters.areaMin !== defaultFilters.areaMin ||
+      appliedFilters.areaMax !== defaultFilters.areaMax
+    ) {
+      result = result.filter(
+        (p) =>
+          p.area >= appliedFilters.areaMin && p.area <= appliedFilters.areaMax,
+      );
+    }
+    if (appliedFilters.bedrooms && appliedFilters.bedrooms !== "all") {
+      const b = parseInt(appliedFilters.bedrooms);
       result = result.filter((p) =>
         b >= 4 ? p.bedrooms >= 4 : p.bedrooms === b,
       );
     }
-    if (filters.bathrooms && filters.bathrooms !== "all") {
-      const b = parseInt(filters.bathrooms);
+    if (appliedFilters.bathrooms && appliedFilters.bathrooms !== "all") {
+      const b = parseInt(appliedFilters.bathrooms);
       result = result.filter((p) =>
         b >= 4 ? p.bathrooms >= 4 : p.bathrooms === b,
       );
     }
 
-    // Sort
     switch (sortBy) {
       case "price-asc":
         result.sort((a, b) => a.currentPrice - b.currentPrice);
         break;
       case "discount":
-        result.sort((a, b) => b.discount - a.discount);
+        result.sort(
+          (a, b) =>
+            getDiscountPercent(b.currentPrice, b.originalPrice) -
+            getDiscountPercent(a.currentPrice, a.originalPrice),
+        );
         break;
       case "roi":
-        result.sort((a, b) => b.roi - a.roi);
+        result.sort(
+          (a, b) =>
+            getMainRoiPercent(b.currentPrice, b.originalPrice) -
+            getMainRoiPercent(a.currentPrice, a.originalPrice),
+        );
         break;
       default:
         result.sort(
@@ -113,7 +192,7 @@ const Properties = () => {
     }
 
     return result;
-  }, [filters, sortBy]);
+  }, [appliedFilters, properties, sortBy]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
   const paginated = filtered.slice(
@@ -123,7 +202,6 @@ const Properties = () => {
 
   return (
     <div className="container-section">
-      {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
           Propiedades disponibles
@@ -134,26 +212,24 @@ const Properties = () => {
       </div>
 
       <div className="flex gap-8">
-        {/* Desktop Sidebar */}
         <aside className="hidden lg:block w-72 shrink-0">
           <div className="sticky top-24 bg-card rounded-2xl border border-border/50 p-6 shadow-card">
             <FilterSidebar
-              filters={filters}
+              filters={draftFilters}
               onFiltersChange={(f) => {
-                setFilters(f);
-                setPage(1);
+                setDraftFilters(f);
               }}
+              onApplyFilters={applyFilters}
+              onClearFilters={clearFilters}
+              hasPendingChanges={hasPendingFilterChanges}
               activeCount={activeFilterCount}
             />
           </div>
         </aside>
 
-        {/* Main */}
         <div className="flex-1 min-w-0">
-          {/* Toolbar */}
           <div className="flex flex-wrap items-center justify-between gap-4 mb-6 bg-card rounded-xl border border-border/50 p-4">
             <div className="flex items-center gap-3">
-              {/* Mobile filter button */}
               <Sheet>
                 <SheetTrigger asChild>
                   <Button
@@ -175,11 +251,13 @@ const Properties = () => {
                   </SheetHeader>
                   <div className="mt-6">
                     <FilterSidebar
-                      filters={filters}
+                      filters={draftFilters}
                       onFiltersChange={(f) => {
-                        setFilters(f);
-                        setPage(1);
+                        setDraftFilters(f);
                       }}
+                      onApplyFilters={applyFilters}
+                      onClearFilters={clearFilters}
+                      hasPendingChanges={hasPendingFilterChanges}
                       activeCount={activeFilterCount}
                     />
                   </div>
@@ -194,11 +272,11 @@ const Properties = () => {
 
             <div className="flex items-center gap-3">
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-44 h-9 bg-secondary border-border text-sm">
+                <SelectTrigger className="w-44 h-9 bg-gray-50 shadow text-sm text-foreground">
                   <SelectValue placeholder="Ordenar por" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="recent">Más reciente</SelectItem>
+                  <SelectItem value="recent">Mas reciente</SelectItem>
                   <SelectItem value="price-asc">Menor precio</SelectItem>
                   <SelectItem value="discount">Mayor descuento</SelectItem>
                   <SelectItem value="roi">Mayor ROI</SelectItem>
@@ -222,15 +300,20 @@ const Properties = () => {
             </div>
           </div>
 
-          {/* Results */}
-          {paginated.length === 0 ? (
+          {loading ? (
+            <div className="text-center py-20">
+              <p className="text-muted-foreground text-lg">
+                Cargando propiedades...
+              </p>
+            </div>
+          ) : paginated.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-muted-foreground text-lg mb-4">
                 No se encontraron propiedades con los filtros seleccionados.
               </p>
               <Button
                 variant="outline"
-                onClick={() => setFilters(defaultFilters)}
+                onClick={clearFilters}
               >
                 <X className="w-4 h-4 mr-1" /> Limpiar filtros
               </Button>
@@ -253,7 +336,6 @@ const Properties = () => {
             </div>
           )}
 
-          {/* Pagination */}
           {totalPages > 1 && (
             <div className="mt-8">
               <Pagination>

@@ -10,8 +10,11 @@ import {
 
 const Footer = () => {
   return (
-    <footer className="bg-foreground text-primary-foreground">
-      <div className="container-section py-16">
+    <footer className="relative overflow-hidden bg-linear-to-br from-foreground via-primary to-primary-light text-primary-foreground">
+      <div className="pointer-events-none absolute -top-20 -right-16 h-56 w-56 rounded-full bg-accent/20 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-24 -left-10 h-64 w-64 rounded-full bg-success/15 blur-3xl" />
+
+      <div className="container-section py-16 relative z-10">
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8">
           {/* Brand Column */}
           <div className="lg:col-span-1">
