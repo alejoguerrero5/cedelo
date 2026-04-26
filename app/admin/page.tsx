@@ -23,19 +23,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-function formatPrice(price: number) {
-  return `COP $${price}`;
-}
+import { formatCOP, formatDate } from "@/utils/helpers";
 
 function statusLabel(status: Property["status"]) {
   if (status === "en-venta") return "En venta";
   if (status === "en-planos") return "En planos";
+  if (status === "eliminado") return "Eliminado";
   return "En construcción";
 }
 
 function statusVariant(status: Property["status"]) {
-  return status === "en-venta" ? ("default" as const) : ("secondary" as const);
+  if (status === "en-venta") return "default";
+  if (status === "eliminado") return "destructive";
+  return "secondary";
 }
 
 function salePrice(currentPrice: number, originalPrice: number) {
@@ -245,10 +245,10 @@ export default function AdminDashboardPage() {
 
                   <TableCell>
                     <div className="font-semibold text-foreground">
-                      {formatPrice(salePrice(p.currentPrice, p.originalPrice))}
+                      {formatCOP(salePrice(p.currentPrice, p.originalPrice))}
                     </div>
                     <div className="text-xs text-muted-foreground line-through">
-                      {formatPrice(p.currentPrice)}
+                      {formatCOP(p.currentPrice)}
                     </div>
                     <div className="text-xs font-semibold text-success">
                       {(
@@ -293,7 +293,7 @@ export default function AdminDashboardPage() {
                   </TableCell>
 
                   <TableCell className="text-sm text-muted-foreground">
-                    {p.createdAt}
+                    {formatDate(p.createdAt)}
                   </TableCell>
 
                   <TableCell className="px-6">
@@ -315,7 +315,7 @@ export default function AdminDashboardPage() {
                         variant="destructive"
                         className="gap-2"
                         onClick={() => requestDelete(p)}
-                        disabled={deletingId !== null}
+                        disabled={p.status === "eliminado"}
                       >
                         <Trash2 className="h-4 w-4" />
                         {deletingId === p.id ? "Eliminando..." : "Eliminar"}

@@ -58,8 +58,9 @@ const Properties = () => {
   useEffect(() => {
     const loadProperties = async () => {
       try {
-        const res = await fetch("/api/properties");
+        const res = await fetch("/api/properties?status=en-venta");
         if (!res.ok) throw new Error("No se pudieron cargar propiedades");
+
         const data = await res.json();
         setProperties(Array.isArray(data) ? data : []);
       } catch (error) {

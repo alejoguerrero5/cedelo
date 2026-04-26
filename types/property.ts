@@ -12,7 +12,7 @@ export interface Property {
   bedrooms: number;
   bathrooms: number;
   type: "apartamento" | "casa";
-  status: "en-venta" | "en-planos" | "en-construccion";
+  status: "en-venta" | "en-planos" | "en-construccion" | "eliminado";
   completionPercent: number;
   image: string;
   images?: string[];
